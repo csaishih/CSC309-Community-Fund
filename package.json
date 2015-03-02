@@ -1,0 +1,8 @@
+{
+	"name": "csc309-community-fund",
+	"main": "server.js",
+	"dependencies": {
+		"express": "~4.12.0",
+		"mysql": "~2.5.4"
+	}
+}
