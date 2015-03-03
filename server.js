@@ -42,11 +42,26 @@ app.post('/signup', function(req, res) {
 	user.authenticateSignUp(email, password, repassword, function(success) {
 		if (success) {
 			user.createUser(name, email, password);
-			res.sendFile('src/html/login.html', {root: __dirname});
+			res.redirect('/login.html');
 		} else {
 			//Authentication failed
-			console.log("Authentication failed");
-			res.sendFile('src/html/signup.html', {root: __dirname});
+			console.log("Sing up failed");
+			res.redirect('signup.html');
+		}
+	});
+});
+
+app.post('/login', function(req, res) {
+	var email = req.body.email;
+	var password = req.body.password;
+	user.authenticateLogin(email, password, function(success) {
+		if (success) {
+			//Successful login
+			console.log("Successful login");
+		} else {
+			//Authentication failed
+			console.log("Login failed");
+			res.redirect('/login.html');
 		}
 	});
 });

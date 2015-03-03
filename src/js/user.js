@@ -20,8 +20,11 @@ function createUser(name, email, password) {
 		});
 }
 
-function checkPassword(password) {
-
+function checkPassword(password, repassword) {
+	if (password.length > 4) {
+		return password == repassword;
+	}
+	return false;
 }
 
 function authenticateSignUp(email, password, repassword, callback) {
@@ -33,7 +36,7 @@ function authenticateSignUp(email, password, repassword, callback) {
 		if (result.length == 0) {
 
 			//Check that passwords match
-			if (password == repassword) {
+			if (checkPassword(password, repassword)) {
 				callback(true);
 			}
 
@@ -51,10 +54,22 @@ function authenticateSignUp(email, password, repassword, callback) {
 });
 }
 
-function authenticateLogin(email, password) {
-
+function authenticateLogin(email, password, callback) {
+	connection.query("SELECT email FROM user WHERE email ='" + email + "' AND password = '" + password + "'", 
+		function(err, result) {
+			if (err) {
+				throw err;
+			} else {
+				if (result.length > 0) {
+					callback(true);
+				} else {
+					callback(false);
+				}
+			}
+		});
 }
 
 exports.createUser = createUser;
+exports.checkPassword = checkPassword;
 exports.authenticateSignUp = authenticateSignUp;
 exports.authenticateLogin = authenticateLogin;
