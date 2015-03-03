@@ -2,6 +2,7 @@ var mysql = require('mysql');
 var express = require('express');
 var bodyParser = require('body-parser');
 var user = require('./src/js/user');
+var nodeMailer = require('nodemailer');
 var app = express();
 
 //For parsing body
@@ -45,7 +46,7 @@ app.post('/signup', function(req, res) {
 			res.redirect('/login.html');
 		} else {
 			//Authentication failed
-			console.log("Sing up failed");
+			console.log("Sign up failed");
 			res.redirect('signup.html');
 		}
 	});
@@ -62,6 +63,39 @@ app.post('/login', function(req, res) {
 			//Authentication failed
 			console.log("Login failed");
 			res.redirect('/login.html');
+		}
+	});
+});
+
+app.post('/lostpw', function(req, res) {
+	console.log("hoo");
+	var email = req.body.email;
+	user.authenticateEmail(email, function(success) {
+		if (success) {
+			var newPassword = user.generate_password(13, 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890');
+			console.log(newPassword);
+			user.changePassword(email, newPassword, function(success) {
+				if (success) {
+					var transporter = nodeMailer.createTransport({
+						service: 'gmail',
+						auth: {
+							user: 'csc301ututor@gmail.com',
+							pass: 'team1ututor'
+						}
+					});
+					transporter.sendMail({
+						from: 'csc301ututor@gmail.com',
+						to: email,
+						subject: 'Reset password',
+						text: "Hello,\nYour temporary password is: " + newPassword + "\nPlease sign in and change your password.\nRegards,\nCommunity Fund Admin"
+					});
+					res.redirect('/login.html');
+				} else {
+					console.log("Failed to change password");
+				}
+			});
+		} else {
+			console.log("Cannot reset password. Email not found");
 		}
 	});
 });
