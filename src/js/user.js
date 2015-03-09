@@ -67,6 +67,10 @@ function changePassword(email, password, callback) {
 						if (err) {
 							throw err;
 						} else {
+<<<<<<< HEAD
+=======
+							console.log(result);
+>>>>>>> 53180b72302529c078bf13d95f507f858a821972
 							if (result) {
 								callback(true);
 							}
