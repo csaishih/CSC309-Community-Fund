@@ -1,27 +1,33 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var user = require('./src/js/user');
 var nodeMailer = require('nodemailer');
 var app = express();
+var server = app.listen(8080);
+var io = require('socket.io').listen(server);
 
 //For parsing body
 app.use(bodyParser.urlencoded({ extended: false}));
 
+//For parsing cookies
+app.use(cookieParser());
+
 //For serving static files
 app.use("/src", express.static(__dirname + "/src"));
 
-
-app.set('views', './src/views');
-app.set('view engine', 'jade');
-
-
 //Root page
 app.get('/', function(req, res) {
-	res.render('index', {
-		title: 'Hey',
-		message: 'Hello there!'
+	var cookie = req.cookies.email;
+	console.log(cookie);
+	user.authenticateEmail(cookie, function(success) {
+		if (success) {
+			res.sendFile('src/html/mainpage.html', {root: __dirname});
+		} else {
+			res.sendFile('src/html/root.html', {root: __dirname});
+		}
 	});
-	//res.sendFile('src/html/root.html', {root: __dirname});
+	
 });
 
 //Login page
@@ -41,7 +47,13 @@ app.get('/setup.html', function(req, res) {
 
 //Lost password page
 app.get('/lostpw.html', function(req, res) {
+	res.cookie("wpoo", "asddddddf");
 	res.sendFile('src/html/lostpw.html', {root: __dirname});
+});
+
+//Main page
+app.get('/mainpage.html', function(req, res) {
+	res.sendFile('src/html/mainpage.html', {root: __dirname});
 });
 
 app.post('/signup', function(req, res) {
@@ -68,7 +80,13 @@ app.post('/login', function(req, res) {
 	user.authenticateLogin(email, password, function(success) {
 		if (success) {
 			//Successful login
+			res.cookie("email", email, {
+				path: '/',
+				httpOnly: true,
+				maxAge: 604800000
+			});
 			console.log("Successful login");
+			res.redirect('/mainpage.html');
 		} else {
 			//Authentication failed
 			console.log("Login failed");
@@ -109,4 +127,10 @@ app.post('/lostpw', function(req, res) {
 });
 
 
-app.listen(8080);
+io.on('connection', function(socket) {
+	user.test(function(result) {
+		socket.emit('go', {
+			msg: result
+		});
+	});
+});

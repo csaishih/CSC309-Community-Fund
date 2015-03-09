@@ -9,6 +9,20 @@ var connection = mysql.createConnection({
 	port: 3306
 });
 
+
+function test(callback) {
+	connection.query("SELECT email FROM user LIMIT 1", function(err, result) {
+		if (err) {
+			throw err;
+		} else {
+			callback(result[0]['email']);
+		}
+	});
+}
+exports.test = test;
+
+
+
 function checkPassword(password, repassword) {
 	if (password.length > 4) {
 		return password == repassword;
@@ -42,13 +56,17 @@ function authenticateLogin(email, password, callback) {
 			if (err) {
 				throw err;
 			} else {
-				bcrypt.compare(password, result[0]['password'], function(err, res) {
-					if (err) {
-						throw err;
-					} else {
-						callback(res);
-					}
-				});
+				if(result[0] == undefined) {
+					callback(false);
+				} else {
+					bcrypt.compare(password, result[0]['password'], function(err, res) {
+						if (err) {
+							throw err;
+						} else {
+							callback(res);
+						}
+					});
+				}
 			}
 		});
 }
@@ -67,10 +85,7 @@ function changePassword(email, password, callback) {
 						if (err) {
 							throw err;
 						} else {
-<<<<<<< HEAD
-=======
 							console.log(result);
->>>>>>> 53180b72302529c078bf13d95f507f858a821972
 							if (result) {
 								callback(true);
 							}
