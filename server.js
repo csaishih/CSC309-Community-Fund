@@ -1,4 +1,3 @@
-var mysql = require('mysql');
 var express = require('express');
 var bodyParser = require('body-parser');
 var user = require('./src/js/user');
@@ -8,9 +7,21 @@ var app = express();
 //For parsing body
 app.use(bodyParser.urlencoded({ extended: false}));
 
+//For serving static files
+app.use("/src", express.static(__dirname + "/src"));
+
+
+app.set('views', './views');
+app.set('view engine', 'jade');
+
+
 //Root page
 app.get('/', function(req, res) {
-	res.sendFile('src/html/root.html', {root: __dirname});
+	res.render('index', {
+		title: 'Hey',
+		message: 'Hello there!'
+	});
+	//res.sendFile('src/html/root.html', {root: __dirname});
 });
 
 //Login page
@@ -47,7 +58,6 @@ app.post('/signup', function(req, res) {
 		} else {
 			//Authentication failed
 			console.log("Sign up failed");
-			res.redirect('signup.html');
 		}
 	});
 });
@@ -62,13 +72,11 @@ app.post('/login', function(req, res) {
 		} else {
 			//Authentication failed
 			console.log("Login failed");
-			res.redirect('/login.html');
 		}
 	});
 });
 
 app.post('/lostpw', function(req, res) {
-	console.log("hoo");
 	var email = req.body.email;
 	user.authenticateEmail(email, function(success) {
 		if (success) {
@@ -87,7 +95,7 @@ app.post('/lostpw', function(req, res) {
 						from: 'csc301ututor@gmail.com',
 						to: email,
 						subject: 'Reset password',
-						text: "Hello,\nYour temporary password is: " + newPassword + "\nPlease sign in and change your password.\nRegards,\nCommunity Fund Admin"
+						text: "Hello,\n\nYour temporary password is: " + newPassword + "\nPlease sign in and change your password.\n\nRegards,\nCommunity Fund Admin"
 					});
 					res.redirect('/login.html');
 				} else {
@@ -99,5 +107,6 @@ app.post('/lostpw', function(req, res) {
 		}
 	});
 });
+
 
 app.listen(8080);
