@@ -85,8 +85,6 @@ app.post('/login', function(req, res) {
 				httpOnly: true,
 				maxAge: 604800000
 			});
-			console.log(req.cookies);
-			//console.log("wat email: " + req.cookies.email);
 			console.log("Successful login");
 			res.redirect('/mainpage.html');
 		} else {
