@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false}));
 app.use("/src", express.static(__dirname + "/src"));
 
 
-app.set('views', './views');
+app.set('views', './src/views');
 app.set('view engine', 'jade');
 
 
