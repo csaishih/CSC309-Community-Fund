@@ -1,5 +1,6 @@
 var socket = io.connect(window.location.hostname);
 
+//Create a p1 object which will render a <div>
 var p1 = React.createClass({displayName: "p1",
 	getInitialState: function() {
 		socket.on('go', this.go);
@@ -30,6 +31,7 @@ var p2 = React.createClass({displayName: "p2",
 	}
 });
 
+//Insert p1 object into the element with id="p1" in mainpage.html
 React.renderComponent(React.createElement(p1, null), document.getElementById("p1"));
 React.renderComponent(React.createElement(p2, null), document.getElementById("p2"));
 React.renderComponent(React.createElement(p3, null), document.getElementById("p3"));

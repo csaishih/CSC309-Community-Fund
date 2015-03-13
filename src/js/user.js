@@ -9,7 +9,8 @@ var connection = mysql.createConnection({
 	port: 3306
 });
 
-
+// Test function for Socket.io + Reack.js
+// Ignore
 function test(callback) {
 	connection.query("SELECT email FROM user LIMIT 1", function(err, result) {
 		if (err) {
@@ -59,6 +60,7 @@ function authenticateLogin(email, password, callback) {
 				if(result[0] == undefined) {
 					callback(false);
 				} else {
+					//Decrypt password
 					bcrypt.compare(password, result[0]['password'], function(err, res) {
 						if (err) {
 							throw err;
@@ -77,8 +79,10 @@ function generate_password(n, a) {
 }
 
 function changePassword(email, password, callback) {
+	//Make sure email is valid
 	authenticateEmail(email, function(success) {
 		if (success) {
+			//Hash password
 			bcrypt.genSalt(10, function(err, salt) {
 				bcrypt.hash(password, salt, function(err, hash) {
 					connection.query("UPDATE user SET password = '" + hash + "' WHERE email = '" + email + "'", function(err, result) {
@@ -100,6 +104,7 @@ function changePassword(email, password, callback) {
 }
 
 function createUser(name, email, password) {
+	//Hash password
 	bcrypt.genSalt(10, function(err, salt) {
 		bcrypt.hash(password, salt, function(err, hash) {
 			connection.query("INSERT INTO user(email, name, password) VALUES ('" + email + "','" + name + "','" + hash + "')",

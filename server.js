@@ -47,7 +47,6 @@ app.get('/setup.html', function(req, res) {
 
 //Lost password page
 app.get('/lostpw.html', function(req, res) {
-	res.cookie("wpoo", "asddddddf");
 	res.sendFile('src/html/lostpw.html', {root: __dirname});
 });
 
