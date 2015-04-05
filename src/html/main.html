@@ -34,7 +34,7 @@
 			<div ng-if="location.length > 0">
 				<div ng-if="interests.length > 0">
 					<div ng-if="userProjects.length == 0" class="text-center">
-						<h2>Share your ideas!</h2>
+						<h2>Hello {{username}}, come share your ideas!</h2>
 						<div class="main-container btn btn-success" ng-click="create()">Start a project</div>
 					</div>
 				</div>
@@ -107,8 +107,10 @@
 							<td class="col-md-1">{{project.rating.dislikes}}</td>
 							<td class="col-md-1">{{project.date.parsedDate}}</td>
 							<td class="pull-right"><button class="btn btn-primary" ng-click="view(project._id)">View</button></td>
-							<td class="pull-right"><button class="btn btn-danger" ng-click="remove(project._id)">Remove</button></td>
-							<td class="pull-right"><button class="btn btn-warning" ng-click="edit(project._id, project.title, project.description, project.funds.goal)">Edit</button></td>
+							<td class="pull-right" ng-if="(ratedDislikes).indexOf(project._id) == -1"><button class="btn btn-default" ng-click="dislike(project._id, project.title, project.description, project.category, project.tags)">Dislike</button></td>
+							<td class="pull-right" ng-if="(ratedDislikes).indexOf(project._id) > -1"><button class="btn btn-danger" ng-click="dislike(project._id, project.title, project.description, project.category, project.tags)">Dislike</button></td>
+							<td class="pull-right" ng-if="(ratedLikes).indexOf(project._id) == -1"><button class="btn btn-default" ng-click="like(project._id, project.title, project.description, project.category, project.tags)">Like</button></td>
+							<td class="pull-right" ng-if="(ratedLikes).indexOf(project._id) > -1"><button class="btn btn-success" ng-click="like(project._id, project.title, project.description, project.category, project.tags)">Like</button></td></td>
 						</tr>
 					</tbody>
 				</table>

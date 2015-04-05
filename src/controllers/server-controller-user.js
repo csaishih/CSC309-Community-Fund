@@ -47,6 +47,7 @@ function createUser(name, email, password, callback) {
 	});
 }
 
+//Get all the projects from this user
 function getUserProjects(email, callback) {
 	findUser(email, function(response) {
 		Project.findProjects(response._id, function(response) {
@@ -55,6 +56,7 @@ function getUserProjects(email, callback) {
 	});
 }
 
+//Get all the projects from other users in this user's community
 function getOtherProjects(email, callback) {
 	findUser(email, function(response) {
 		Project.findOtherProjects(response._id, response.preferences.interests, response.preferences.location, function(response) {
@@ -63,6 +65,7 @@ function getOtherProjects(email, callback) {
 	});
 }
 
+//Get the array of items that this user has rated
 function getRatings(email, callback) {
 	User.findOne({
 		'login.email': email,
@@ -76,7 +79,10 @@ function getRatings(email, callback) {
 	});
 }
 
-
+//Check what rating this user has given a certain project or other user
+// (1) - Liked
+// (-1) - Disliked
+// (0) - No rating yet
 function findRating(email, id, callback) {
 	User.findOne({
 		'login.email': email,
@@ -85,9 +91,9 @@ function findRating(email, id, callback) {
 			console.log(error);
 			throw error;
 		} else if (response) {
-			if ((response.rating.likes).indexOf(id) > -1) {
+			if ((response.rated.likes).indexOf(id) > -1) {
 				callback(1);
-			} else if ((response.rating.dislikes).indexOf(id) > -1) {
+			} else if ((response.rated.dislikes).indexOf(id) > -1) {
 				callback(-1);
 			} else {
 				callback(0);
@@ -99,7 +105,7 @@ function findRating(email, id, callback) {
 	});
 }
 
-
+//User has rated something
 function pushUserRating(email, flag, id, callback) {
 	if (flag == 1) {
 		User.findOneAndUpdate({
@@ -107,7 +113,7 @@ function pushUserRating(email, flag, id, callback) {
 		},
 		{
 			$push: {
-				'rating.likes': id
+				'rated.likes': id
 			}
 		},
 		{
@@ -126,7 +132,7 @@ function pushUserRating(email, flag, id, callback) {
 		},
 		{
 			$push: {
-				'rating.dislikes': id
+				'rated.dislikes': id
 			}
 		},
 		{
@@ -142,6 +148,7 @@ function pushUserRating(email, flag, id, callback) {
 	}
 }
 
+//User has unrated something
 function pullUserRating(email, flag, id, callback) {
 	if (flag == 1) {
 		User.findOneAndUpdate({
@@ -149,7 +156,7 @@ function pullUserRating(email, flag, id, callback) {
 		},
 		{
 			$pull: {
-				'rating.likes': id
+				'rated.likes': id
 			}
 		},
 		{
@@ -168,7 +175,7 @@ function pullUserRating(email, flag, id, callback) {
 		},
 		{
 			$pull: {
-				'rating.dislikes': id
+				'rated.dislikes': id
 			}
 		},
 		{
@@ -184,6 +191,7 @@ function pullUserRating(email, flag, id, callback) {
 	}
 }
 
+//Set up the user's location and interests
 function setupProfile(email, user_interests, user_locations, callback) {
 	var interests = Project.parseInterests(user_interests);
 	var location = Project.parseLocations(user_locations);

@@ -30,6 +30,7 @@ function findProjects(author_id, callback) {
 	});
 }
 
+//Find all the projects initiated by other people in the user's community
 function findOtherProjects(id, interests, location, callback) {
 	Project.find({
 		'author.id': {$ne: id},
@@ -40,12 +41,12 @@ function findOtherProjects(id, interests, location, callback) {
 			console.log(error);
 			throw error;
 		} else {
-			console.log(response);
 			callback(response);
 		}
 	});
 }
 
+//Delete a project
 function deleteProject(id, callback) {
 	Project.remove({
 		'_id': id
@@ -59,6 +60,7 @@ function deleteProject(id, callback) {
 	});
 }
 
+//Puts all the interests the user selected into an array
 function parseInterests(user_interests) {
 	var interests = []
 	if (user_interests.art) {interests.push('Art')}
@@ -73,6 +75,7 @@ function parseInterests(user_interests) {
 	return interests;
 }
 
+//Puts all the locations the user selected into an array
 function parseLocations(user_locations) {
 	var location = []
 	if (user_locations.paloalto) {location.push('Palo Alto')}
@@ -82,11 +85,11 @@ function parseLocations(user_locations) {
 	return location;
 }
 
+//Create a new project
 function createProject(email, title, description, fundgoal, user_interests, user_locations, callback) {
 	var interests = parseInterests(user_interests);
 	var location = parseLocations(user_locations);
 	fundgoal = parseInt(fundgoal);
-	console.log(description);
 	User.findUser(email, function(response) {
 		new Project({
 			author: {
@@ -115,6 +118,7 @@ function createProject(email, title, description, fundgoal, user_interests, user
 	});
 }
 
+//Edit an existing project
 function editProject(id, title, description, fundgoal, category, user_location, callback) {
 	var category = parseInterests(category);
 	var location = parseLocations(user_location);
@@ -142,6 +146,28 @@ function editProject(id, title, description, fundgoal, category, user_location, 
 	});
 }
 
+//Increment the likes and dislikes by an integer
+function editProjectRep(id, likes, dislikes, callback) {
+	Project.findOneAndUpdate({
+		'_id': id
+	},
+	{
+		$inc: {
+			'rating.likes': likes,
+			'rating.dislikes': dislikes
+		}
+	},
+	{
+		new: true
+	}, function(error, response) {
+		if (error) {
+			console.log(error);
+			throw error;
+		} else {
+			callback(response);
+		}
+	});
+}
 exports.findProject = findProject;
 exports.findProjects = findProjects;
 exports.findOtherProjects = findOtherProjects;
@@ -150,3 +176,4 @@ exports.createProject = createProject;
 exports.editProject = editProject;
 exports.parseInterests = parseInterests;
 exports.parseLocations = parseLocations;
+exports.editProjectRep = editProjectRep;

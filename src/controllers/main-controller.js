@@ -8,6 +8,8 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 			$scope.username = response.name;
 			$scope.location = response.preferences.location;
 			$scope.interests = response.preferences.interests;
+			$scope.ratedLikes = response.rated.likes;
+			$scope.ratedDislikes = response.rated.dislikes;
 		});
 		$http.get('/getUserProjects').success(function(response) {
 			$scope.userProjects = response;
@@ -60,6 +62,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 			resolve: {
 				input: function() {
 					return {
+						id: null,
 						title: '',
 						description: '',
 						fundgoal: '',
@@ -69,6 +72,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 			}
 		});
 		modalInstance.result.then(function(response) {
+			console.log(response);
 			$http.post('/createProject', response).success(function(response) {
 				if (response) {
 					toastr.success('Project created', 'Success');
@@ -127,11 +131,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 					id: id,
 					flag: -1
 				}).success(function(response) {
-					$http.put('/idea/' + id, {
-						title: title,
-						description: description,
-						category: category,
-						tags: tags,
+					$http.put('/project/' + id, {
 						likes: -1,
 						dislikes: 0
 					}).success(function(response) {
@@ -147,11 +147,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 					id: id,
 					flag: 1
 				}).success(function(response) {
-					$http.put('/idea/' + id, {
-						title: title,
-						description: description,
-						category: category,
-						tags: tags,
+					$http.put('/project/' + id, {
 						likes: 1,
 						dislikes: 0
 					}).success(function(response) {
@@ -167,11 +163,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 					id: id,
 					flag: 0
 				}).success(function(response) {
-					$http.put('/idea/' + id, {
-						title: title,
-						description: description,
-						category: category,
-						tags: tags,
+					$http.put('/project/' + id, {
 						likes: 1,
 						dislikes: -1
 					}).success(function(response) {
@@ -193,11 +185,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 					id: id,
 					flag: -1
 				}).success(function(response) {
-					$http.put('/idea/' + id, {
-						title: title,
-						description: description,
-						category: category,
-						tags: tags,
+					$http.put('/project/' + id, {
 						likes: 0,
 						dislikes: -1
 					}).success(function(response) {
@@ -213,11 +201,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 					id: id,
 					flag: 1
 				}).success(function(response) {
-					$http.put('/idea/' + id, {
-						title: title,
-						description: description,
-						category: category,
-						tags: tags,
+					$http.put('/project/' + id, {
 						likes: 0,
 						dislikes: 1
 					}).success(function(response) {
@@ -233,11 +217,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 					id: id,
 					flag: 0
 				}).success(function(response) {
-					$http.put('/idea/' + id, {
-						title: title,
-						description: description,
-						category: category,
-						tags: tags,
+					$http.put('/project/' + id, {
 						likes: -1,
 						dislikes: 1
 					}).success(function(response) {
@@ -361,7 +341,6 @@ app.controller('MainModalController', function($scope, $modalInstance, toastr, i
 			toastr.error('Please select your locations', 'Error');
 		} else {
 			$modalInstance.close({
-				id: input.id,
 				title: $scope.title,
 				description: $scope.description,
 				fundgoal: $scope.fundgoal,

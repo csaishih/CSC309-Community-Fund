@@ -105,7 +105,8 @@ app.post('/setupProfile', function(req, res) {
 
 //Project requests
 app.post('/createProject', function(req, res) {
-	server.createProject(req.cookies.email, req.body.title, req.body.description, req.body.fundgoal, req.body.interests, req.body.location, function(response) {
+
+	server.createProject(req.cookies.email, req.body.title, req.body.description, req.body.fundgoal, req.body.category, req.body.location, function(response) {
 		res.json(response);
 	});
 });
@@ -132,26 +133,6 @@ app.get('/findProject/:id', function(req, res) {
 	});
 });
 
-/*
-app.post('/createIdea', function(req, res) {
-	server.createIdea(req.body.title, req.body.description, req.body.category, req.body.tags, req.cookies.email, function(response) {
-		res.json(response);
-	});
-});
-
-app.put('/idea/:id', function(req, res) {;
-	server.updateIdea(req.params.id, req.body.title, req.body.description, req.body.category, req.body.tags, req.body.likes, req.body.dislikes, function(response) {
-		res.json(response);
-	});
-});
-
-
-app.get('/getUser', function(req, res) {
-	server.getUser(req.cookies.email, function(response) {
-		res.send(response);
-	});
-});
-
 app.get('/findRating/:id', function(req, res) {
 	server.findRating(req.cookies.email, req.params.id, function(response) {
 		res.json(response);
@@ -175,6 +156,31 @@ app.put('/user/:flag', function(req, res) {
 		});			
 	}
 });
+
+app.put('/project/:id', function(req, res) {;
+	server.editProjectRep(req.params.id, req.body.likes, req.body.dislikes, function(response) {
+		res.json(response);
+	});
+});
+/*
+app.post('/createIdea', function(req, res) {
+	server.createIdea(req.body.title, req.body.description, req.body.category, req.body.tags, req.cookies.email, function(response) {
+		res.json(response);
+	});
+});
+
+
+
+
+app.get('/getUser', function(req, res) {
+	server.getUser(req.cookies.email, function(response) {
+		res.send(response);
+	});
+});
+
+
+
+
 
 app.get('/getRatings', function(req, res) {
 	server.getRatings(req.cookies.email, function(response) {
