@@ -109,6 +109,13 @@ app.post('/createProject', function(req, res) {
 		res.json(response);
 	});
 });
+
+app.delete('/project/:id', function(req, res) {
+	server.deleteProject(req.params.id, function(response) {
+		res.json(response);
+	});
+});
+
 /*
 app.post('/createIdea', function(req, res) {
 	server.createIdea(req.body.title, req.body.description, req.body.category, req.body.tags, req.cookies.email, function(response) {
@@ -122,11 +129,6 @@ app.put('/idea/:id', function(req, res) {;
 	});
 });
 
-app.delete('/idea/:id', function(req, res) {
-	server.deleteIdea(req.params.id, function(response) {
-		res.json(response);
-	});
-});
 
 app.get('/getUser', function(req, res) {
 	server.getUser(req.cookies.email, function(response) {

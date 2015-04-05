@@ -108,8 +108,8 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 		});
 	}
 
-	$scope.remove = function(id, title, description, category, tags) {
-		$http.delete('/idea/' + id).success(function(response) {
+	$scope.remove = function(id) {
+		$http.delete('/project/' + id).success(function(response) {
 			if (response) {
 				refresh();
 			} else {
@@ -378,7 +378,7 @@ app.controller('MainModalController', function($scope, $modalInstance, toastr, i
 		} else {
 			$modalInstance.close({
 				title: $scope.title,
-				desciption: $scope.desciption,
+				description: $scope.description,
 				fundgoal: $scope.fundgoal,
 				interests: $scope.checkbox_interests,
 				location: $scope.checkbox_location

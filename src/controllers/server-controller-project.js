@@ -1,5 +1,6 @@
 var Project = require('../models/project');
 var User = require('./server-controller-user');
+var Server = require('./server-controller');
 
 //Finds a project in the system
 function findProject(id, callback) {
@@ -82,7 +83,7 @@ function createProject(email, title, description, fundgoal, user_interests, user
 	var interests = parseInterests(user_interests);
 	var location = parseLocations(user_locations);
 	fundgoal = parseInt(fundgoal);
-
+	console.log(description);
 	User.findUser(email, function(response) {
 		new Project({
 			author: {
