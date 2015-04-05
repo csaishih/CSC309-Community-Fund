@@ -80,32 +80,33 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 		});
 	}
 
-	$scope.edit = function(id, title, description, category, tags, likes, dislikes) {
+	$scope.edit = function(id, title, description, fundgoal) {
 		var modalInstance = $modal.open({
 			templateUrl: '/src/html/modal_project.html',
 			controller: 'MainModalController',
+			size: 'lg',
 			resolve: {
 				input: function() {
 					return {
+						id: id,
 						title: title,
 						description: description,
-						category: category,
-						tags: tags,
+						fundgoal: fundgoal,
 						pagetext: 'Editing'
 					};
 				}
 			}
 		});
 
-		modalInstance.result.then(function(result) {
-			var str = "{ title: '" + result.title + "', description: '" + result.description + "', category: '" + result.category + "', tags: ['";
-			var i;
-			for (i = 0; i < result.tags.length; i++ ){
-				str += result.tags[i] + "', '";
-			}
-			str = str.substring(0, str.length - 4) + "'], likes: 0, dislikes: 0 }";
-			var data = JSON.stringify(eval("(" + str + ")"));
-			$scope.update(id, data);
+		modalInstance.result.then(function(response) {
+			$http.post('/editProject', response).success(function(response) {
+				if (response) {
+					toastr.success('Project changed', 'Success');
+					refresh();
+				} else {
+					toastr.error('Something went wrong');
+				}
+			});
 		});
 	}
 
@@ -117,26 +118,6 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 				toastr.error('Something went wrong', 'Error');
 			}
 		});
-	}
-
-	$scope.update = function(id, data) {
-		if (id == null) {
-			$http.post('/createIdea', data).success(function(response) {
-				if (response) {
-					refresh();
-				} else {
-					console.log("Fail");
-				}
-			});			
-		} else {
-			$http.put('/idea/' + id, data).success(function(response) {
-				if (response) {
-					refresh();
-				} else {
-					console.log("Fail");
-				}
-			});
-		}
 	}
 
 	$scope.like = function(id, title, description, category, tags) {
@@ -380,10 +361,11 @@ app.controller('MainModalController', function($scope, $modalInstance, toastr, i
 			toastr.error('Please select your locations', 'Error');
 		} else {
 			$modalInstance.close({
+				id: input.id,
 				title: $scope.title,
 				description: $scope.description,
 				fundgoal: $scope.fundgoal,
-				interests: $scope.checkbox_interests,
+				category: $scope.checkbox_interests,
 				location: $scope.checkbox_location
 			});
 		}

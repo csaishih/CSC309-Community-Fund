@@ -30,14 +30,17 @@ function findProjects(author_id, callback) {
 	});
 }
 
-function findOtherProjects(id, callback) {
+function findOtherProjects(id, interests, location, callback) {
 	Project.find({
-		'author.id': {$ne: id}
+		'author.id': {$ne: id},
+		'category': {$in: interests},
+		'location': {$in: location}
 	}, function(error, response) {
 		if (error) {
 			console.log(error);
 			throw error;
 		} else {
+			console.log(response);
 			callback(response);
 		}
 	});
@@ -112,7 +115,9 @@ function createProject(email, title, description, fundgoal, user_interests, user
 	});
 }
 
-function updateIdea(id, title, description, category, tags, likes, dislikes, callback) {
+function editProject(id, title, description, fundgoal, category, user_location, callback) {
+	var category = parseInterests(category);
+	var location = parseLocations(user_location);
 	Project.findOneAndUpdate({
 		'_id': id
 	},
@@ -120,12 +125,9 @@ function updateIdea(id, title, description, category, tags, likes, dislikes, cal
 		$set: {
 			'title': title,
 			'description': description,
+			'funds.goal': fundgoal,
 			'category': category,
-			'tags': tags
-		},
-		$inc: {
-			'rating.likes': likes,
-			'rating.dislikes': dislikes
+			'location': location
 		}
 	},
 	{
@@ -145,6 +147,6 @@ exports.findProjects = findProjects;
 exports.findOtherProjects = findOtherProjects;
 exports.deleteProject = deleteProject;
 exports.createProject = createProject;
-exports.updateIdea = updateIdea;
+exports.editProject = editProject;
 exports.parseInterests = parseInterests;
 exports.parseLocations = parseLocations;

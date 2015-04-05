@@ -1,4 +1,4 @@
-//Server file
+//Server
 
 //Add dependencies 
 var express = require('express');
@@ -110,6 +110,12 @@ app.post('/createProject', function(req, res) {
 	});
 });
 
+app.post('/editProject', function(req, res) {
+	server.editProject(req.body.id, req.body.title, req.body.description, req.body.fundgoal, req.body.category, req.body.location, function(response) {
+		res.json(response);
+	});
+});
+
 app.delete('/project/:id', function(req, res) {
 	server.deleteProject(req.params.id, function(response) {
 		res.json(response);
@@ -172,39 +178,6 @@ app.put('/user/:flag', function(req, res) {
 
 app.get('/getRatings', function(req, res) {
 	server.getRatings(req.cookies.email, function(response) {
-		res.json(response);
-	});
-});
-
-app.get('/categoryCount', function(req, res) {
-	server.categoryCount(function(response) {
-		res.json(response);
-	});
-});
-
-
-
-
-app.put('/updateCategory', function(req, res) {
-	server.updateCategory(req.cookies.email, req.body.category, req.body.flag, function(response) {
-		res.json(response);
-	});
-});
-
-app.put('/updateSorting', function(req, res) {
-	server.updateSorting(req.cookies.email, req.body.order, req.body.sortBy, function(response) {
-		res.json(response);
-	});
-});
-
-app.post('/setFilter', function(req, res) {
-	server.setFilter(req.cookies.email, req.body.clear, req.body.tags, function(response) {
-		res.json(response);
-	});
-});
-
-app.post('/retrieve', function(req, res) {
-	server.retrieve(req.body.posInt, req.body.sdate, req.body.edate, function(response) {
 		res.json(response);
 	});
 });

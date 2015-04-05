@@ -57,7 +57,7 @@ function getUserProjects(email, callback) {
 
 function getOtherProjects(email, callback) {
 	findUser(email, function(response) {
-		Project.findOtherProjects(response._id, function(response) {
+		Project.findOtherProjects(response._id, response.preferences.interests, response.preferences.location, function(response) {
 			callback(response);
 		});
 	});

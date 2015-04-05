@@ -27,8 +27,7 @@ exports.findProject = Project.findProject;
 exports.findProjects = Project.findProjects;
 exports.deleteProject = Project.deleteProject;
 exports.createProject = Project.createProject;
-exports.updateIdea = Project.updateIdea;
-exports.categoryCount = Project.categoryCount;
+exports.editProject = Project.editProject;
 
 exports.authenticateEmail = Auth.authenticateEmail;
 exports.authenticateSignUp = Auth.authenticateSignUp;
