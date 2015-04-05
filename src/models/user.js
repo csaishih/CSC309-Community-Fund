@@ -1,6 +1,5 @@
-/*
- * Defines the model for a User 
- */
+//Defines the model for a User 
+
 var restful = require('node-restful');
 var mongoose = restful.mongoose;
 
@@ -26,7 +25,7 @@ var userSchema = new mongoose.Schema({
 	date: {
 		dateObj: {
 			type: Date,
-			default: date
+			default: Date.now
 		},
 		parsedDate: {
 			type: String

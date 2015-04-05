@@ -1,6 +1,5 @@
-/*
- * Defines the model for a Project
- */
+//Defines the model for a Project
+
 var restful = require('node-restful');
 var mongoose = restful.mongoose;
 
@@ -23,7 +22,7 @@ var projectSchema = new mongoose.Schema({
 			type: Number,
 			required: true
 		}
-	}
+	},
 	category: {
 		type: Array,
 		default: []
@@ -35,7 +34,7 @@ var projectSchema = new mongoose.Schema({
 	date: {
 		dateObj: {
 			type: Date,
-			default: date
+			default: Date.now
 		},
 		parsedDate: {
 			type: String
@@ -50,6 +49,11 @@ var projectSchema = new mongoose.Schema({
 			type: Number,
 			default: 0
 		}
+	},
+	author: {
+		id: String,
+		name: String,
+		email: String
 	}
 }, {
 	versionKey: false

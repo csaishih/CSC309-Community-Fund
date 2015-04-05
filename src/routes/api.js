@@ -1,3 +1,4 @@
+//API router
 var express = require('express');
 var router = express.Router();
 
@@ -8,6 +9,6 @@ User.methods(['get', 'put', 'post', 'delete']);
 User.register(router, '/users');
 
 Project.methods(['get', 'put', 'post', 'delete']);
-Project.register(router, '/project');
+Project.register(router, '/projects');
 
 module.exports = router;

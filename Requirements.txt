@@ -1,7 +1,0 @@
-User
-	-name
-	-email
-	-password
-	-date / parsed date
-	-rating
-Project
