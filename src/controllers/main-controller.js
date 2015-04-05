@@ -1,158 +1,42 @@
+//Controller for the main page
 var app = angular.module('main', ['ui.bootstrap', 'ngAnimate', 'toastr']);
 app.controller('MainController', function($scope, $modal, $http, $window, toastr) {
+
+	//Refresh function to reload everything on the page
 	var refresh = function() {
-		$scope.filterTags = "";
 		$http.get('/getUser').success(function(response) {
 			$scope.username = response.name;
-			$scope.categoryPreference = response.categoryPreference;
-			$scope.sortingPreferenceOrder = response.sortingPreference.order;
-			$scope.sortingPreferenceSortBy = response.sortingPreference.sortBy;
+			$scope.location = response.preferences.location;
+			$scope.interests = response.preferences.interests;
 		});
-		$http.get('/getUserIdeas').success(function(response) {
-			$scope.userIdeas = response;
+		$http.get('/getUserProjects').success(function(response) {
+			$scope.userProjects = response;
 		});
-		$http.get('/getOtherIdeas').success(function(response) {
-			$scope.otherIdeas = response;
-		});
-		$http.get('/getRatings').success(function(response) {
-			$scope.ratings = response;
-		});
-		$http.get('/categoryCount').success(function(response) {
-			var chart = AmCharts.makeChart("chartdiv", {
-				"type": "serial",
-				"theme": "none",
-				"dataProvider": [{
-					"category": "Health",
-					"visits": response.health,
-					"color": "#337ab7"
-				}, {
-					"category": "Technology",
-					"visits": response.technology,
-					"color": "#5cb85c"
-				}, {
-					"category": "Education",
-					"visits": response.education,
-					"color": "#5bc0de"
-				}, {
-					"category": "Finance",
-					"visits": response.finance,
-					"color": "#f0ad4e"
-				}, {
-					"category": "Travel",
-					"visits": response.travel,
-					"color": "#d9534f"
-				}],
-				"valueAxes": [{
-					"axisAlpha": 0,
-					"position": "left",
-					"title": "Number of ideas",
-					"integersOnly": true
-				}],
-				"startDuration": 0,
-				"graphs": [{
-					"balloonText": "<b>[[category]]: [[value]]</b>",
-					"fillColorsField": "color",
-					"fillAlphas": 0.9,
-					"lineAlpha": 0.2,
-					"type": "column",
-					"valueField": "visits"
-				}],
-				"chartCursor": {
-					"categoryBalloonEnabled": false,
-					"cursorAlpha": 0,
-					"zoomable": false
-				},
-				"categoryField": "category",
-				"categoryAxis": {
-					"gridPosition": "start",
-					"labelRotation": 45
-				},
-				"amExport":{}
-			});
+		$http.get('/getOtherProjects').success(function(response) {
+			$scope.otherProjects = response;
 		});
 	};
+
+	//Refresh as we load the page for the first time to get our data
 	refresh();
 
-	$scope.retrieve = function() {
-		if ($scope.posInt > 0) {
-			$scope.edate.setHours(0);
-			$scope.edate.setMinutes(0);
-			$scope.edate.setSeconds(0);
-			$http.post('/retrieve', {
-				posInt: $scope.posInt,
-				sdate: $scope.sdate,
-				edate: $scope.edate
-			}).success(function(response) {
-				$scope.retrieveModal(response);
-			});
-		} else {
-			toastr.warning('Please enter the number of results you would like to receive', 'Warning');
-		}
-	}
-
-	$scope.retrieveModal = function(response) {
+	//Allows users to setup their profile to join a community
+	$scope.profileSetup = function() {
 		var modalInstance = $modal.open({
-			templateUrl: '/src/html/modal_retrieve.html',
-			controller: 'RetrieveModalController',
-			size: "lg",
-			resolve: {
-				input: function() {
-					return response;
+			templateUrl: '/src/html/modal_setup.html',
+			controller: 'SetupModalController'
+		});
+
+		modalInstance.result.then(function(response) {
+			$http.post('/setupProfile', response).success(function(response) {
+				if (response) {
+					toastr.success('Profile set up', 'Hooray');
+				} else {
+					toastr.error('something went wrong');
 				}
-			}
-		});
-	}
-
-	$scope.clearFilter = function() {
-		$http.post('/setFilter', {
-			clear: 1,
-			tags: ""
-		}).success(function(response) {
-			refresh();
-		});
-	}
-	$scope.clearFilter();
-
-	$scope.sort = function(order, sortBy) {
-		$http.put('/updateSorting', {
-			order: order,
-			sortBy: sortBy
-		}).success(function(response) {
-			refresh();
-		});
-	}
-
-	$scope.filter = function() {
-		if ($scope.filterTags != "") {
-			$http.post('/setFilter', {
-				clear: 0,
-				tags: $scope.filterTags
-			}).success(function(response) {
-				refresh();
+				$window.location.href = '/';
 			});
-		} else {
-			toastr.error('Please enter tags to filter', 'Error');
-		}
-	}
-
-	$scope.toggle = function(category) {
-		if (($scope.categoryPreference).indexOf(category) > -1) {
-			//remove
-			$http.put('/updateCategory', {
-				category: category,
-				flag: 0
-			}).success(function(response) {
-				refresh();
-			});
-		} else {
-			//add
-			$http.put('/updateCategory', {
-				category: category,
-				flag: 1
-			}).success(function(response) {
-				refresh();
-			});
-		}
+		});		
 	}
 
 	$scope.logout = function() {
@@ -163,6 +47,94 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 
 	$scope.view = function(id) {
 		$window.location.href = '/view/' + id;
+	}
+
+	$scope.create = function() {
+		var modalInstance = $modal.open({
+			templateUrl: '/src/html/modal_project.html',
+			controller: 'MainModalController',
+			resolve: {
+				input: function() {
+					return {
+						title: '',
+						description: '',
+						category: '',
+						tags: [],
+						pagetext: 'Creating'
+					};
+				}
+			}
+		});
+
+		modalInstance.result.then(function(result) {
+			var str = "{ title: '" + result.title + "', description: '" + result.description + "', category: '" + result.category + "', tags: ['";
+			var i;
+			for (i = 0; i < result.tags.length; i++ ){
+				str += result.tags[i] + "', '";
+			}
+			str = str.substring(0, str.length - 4) + "'] }";
+			var data = JSON.stringify(eval("(" + str + ")"));
+			$scope.update(null, data);		
+		});
+	}
+
+	$scope.edit = function(id, title, description, category, tags, likes, dislikes) {
+		var modalInstance = $modal.open({
+			templateUrl: '/src/html/modal_idea.html',
+			controller: 'MainModalController',
+			resolve: {
+				input: function() {
+					return {
+						title: title,
+						description: description,
+						category: category,
+						tags: tags,
+						pagetext: 'Editing'
+					};
+				}
+			}
+		});
+
+		modalInstance.result.then(function(result) {
+			var str = "{ title: '" + result.title + "', description: '" + result.description + "', category: '" + result.category + "', tags: ['";
+			var i;
+			for (i = 0; i < result.tags.length; i++ ){
+				str += result.tags[i] + "', '";
+			}
+			str = str.substring(0, str.length - 4) + "'], likes: 0, dislikes: 0 }";
+			var data = JSON.stringify(eval("(" + str + ")"));
+			$scope.update(id, data);
+		});
+	}
+
+	$scope.remove = function(id, title, description, category, tags) {
+		$http.delete('/idea/' + id).success(function(response) {
+			if (response) {
+				refresh();
+			} else {
+				console.log("Fail");
+			}
+		});
+	}
+
+	$scope.update = function(id, data) {
+		if (id == null) {
+			$http.post('/createIdea', data).success(function(response) {
+				if (response) {
+					refresh();
+				} else {
+					console.log("Fail");
+				}
+			});			
+		} else {
+			$http.put('/idea/' + id, data).success(function(response) {
+				if (response) {
+					refresh();
+				} else {
+					console.log("Fail");
+				}
+			});
+		}
 	}
 
 	$scope.like = function(id, title, description, category, tags) {
@@ -296,108 +268,60 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 			}
 		});
 	}
+});
 
-	$scope.create = function() {
-		var modalInstance = $modal.open({
-			templateUrl: '/src/html/modal_idea.html',
-			controller: 'MainModalController',
-			resolve: {
-				input: function() {
-					return {
-						title: '',
-						description: '',
-						category: '',
-						tags: [],
-						pagetext: 'Creating'
-					};
-				}
-			}
-		});
-
-		modalInstance.result.then(function(result) {
-			var str = "{ title: '" + result.title + "', description: '" + result.description + "', category: '" + result.category + "', tags: ['";
-			var i;
-			for (i = 0; i < result.tags.length; i++ ){
-				str += result.tags[i] + "', '";
-			}
-			str = str.substring(0, str.length - 4) + "'] }";
-			var data = JSON.stringify(eval("(" + str + ")"));
-			$scope.update(null, data);		
-		});
+app.controller('SetupModalController', function($scope, $modalInstance, toastr) {
+	$scope.checkbox_interests = {
+		art: false,
+		design: false,
+		fashion: false,
+		film: false,
+		food: false,
+		games: false,
+		music: false,
+		photography: false,
+		technology: false
+	};
+	$scope.checkbox_location = {
+		paloalto: false,
+		sanjose: false,
+		toronto: false,
+		vancouver: false
+	}
+	$scope.cancel = function() {
+		$modalInstance.dismiss('cancel');
 	}
 
-	$scope.edit = function(id, title, description, category, tags, likes, dislikes) {
-		var modalInstance = $modal.open({
-			templateUrl: '/src/html/modal_idea.html',
-			controller: 'MainModalController',
-			resolve: {
-				input: function() {
-					return {
-						title: title,
-						description: description,
-						category: category,
-						tags: tags,
-						pagetext: 'Editing'
-					};
-				}
-			}
-		});
-
-		modalInstance.result.then(function(result) {
-			var str = "{ title: '" + result.title + "', description: '" + result.description + "', category: '" + result.category + "', tags: ['";
-			var i;
-			for (i = 0; i < result.tags.length; i++ ){
-				str += result.tags[i] + "', '";
-			}
-			str = str.substring(0, str.length - 4) + "'], likes: 0, dislikes: 0 }";
-			var data = JSON.stringify(eval("(" + str + ")"));
-			$scope.update(id, data);
-		});
+	$scope.checkError = function(object) {
+		return (object === undefined || object === '' || (object[0] == '' && object.length == 1));
 	}
 
-	$scope.remove = function(id, title, description, category, tags) {
-		$http.delete('/idea/' + id).success(function(response) {
-			if (response) {
-				refresh();
-			} else {
-				console.log("Fail");
-			}
-		});
-	}
-
-	$scope.update = function(id, data) {
-		if (id == null) {
-			$http.post('/createIdea', data).success(function(response) {
-				if (response) {
-					refresh();
-				} else {
-					console.log("Fail");
-				}
-			});			
+	$scope.submit = function() {
+		if ($scope.checkbox_interests.art == false &&
+			$scope.checkbox_interests.design == false &&
+			$scope.checkbox_interests.fashion == false &&
+			$scope.checkbox_interests.film == false &&
+			$scope.checkbox_interests.food == false &&
+			$scope.checkbox_interests.games == false &&
+			$scope.checkbox_interests.music == false &&
+			$scope.checkbox_interests.photography == false &&
+			$scope.checkbox_interests.technology == false) {
+			toastr.error('Please select your interests', 'Error');
+		} else if ($scope.checkbox_location.paloalto == false &&
+			$scope.checkbox_location.sanjose == false &&
+			$scope.checkbox_location.toronto == false &&
+			$scope.checkbox_location.vancouver == false) {
+			toastr.error('Please select your locations', 'Error');
 		} else {
-			$http.put('/idea/' + id, data).success(function(response) {
-				if (response) {
-					refresh();
-				} else {
-					console.log("Fail");
-				}
+			$modalInstance.close({
+				interests: $scope.checkbox_interests,
+				location: $scope.checkbox_location
 			});
 		}
 	}
 });
 
-app.controller('MainModalController', function($scope, $modalInstance, toastr, input) {
-	$scope.removeDuplicates = function(source) {
-		var tag = "";
-		var i;
-		for (i = 0; i < source.length; i ++){
-			if (tag.indexOf(source[i].trim()) == -1) {
-				tag += source[i].trim() + ';';
-			}
-		}
-		return tag;
-	}
-
+app.controller('MainModalController', function($scope, $modalInstance, toastr) {
 	$scope.checkError = function(object) {
 		return (object === undefined || object === '' || (object[0] == '' && object.length == 1));
 	}
@@ -406,11 +330,6 @@ app.controller('MainModalController', function($scope, $modalInstance, toastr, i
 		$modalInstance.dismiss('cancel');
 	}
 
-	$scope.pagetext = input.pagetext;
-	$scope.title = input.title;
-	$scope.description = input.description;
-	$scope.category = input.category;
-	$scope.tags = $scope.removeDuplicates(input.tags);
 
 	$scope.submit = function() {
 		var correctTags = ($scope.tags.replace(/;+/g, ";")).replace(/'/g, "\\'");
@@ -447,9 +366,6 @@ app.controller('MainModalController', function($scope, $modalInstance, toastr, i
 	};
 });
 
-app.controller('RetrieveModalController', function($scope, $modalInstance, input) {
-	$scope.response = input;
-});
 app.config(function(toastrConfig) {
 	angular.extend(toastrConfig, {
 		closeButton: true,

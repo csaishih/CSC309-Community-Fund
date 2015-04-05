@@ -1,5 +1,7 @@
 var bcrypt = require('bcrypt');
 var User = require('../models/user');
+var Project = require('./server-controller-project');
+var Server = require('./server-controller');
 
 //Finds a user in the system
 function findUser(email, callback) {
@@ -28,6 +30,9 @@ function createUser(name, email, password, callback) {
 					login: {
 						'email': email,
 						'password': hash
+					},
+					date: {
+						'parsedDate': Server.parseDate()
 					}
 				}).save(function(error, response) {
 					if (error) {
@@ -44,93 +49,17 @@ function createUser(name, email, password, callback) {
 
 function getUserProjects(email, callback) {
 	findUser(email, function(response) {
-		findProjectAuthor(response._id, function(response) {
+		Project.findProjects(response._id, function(response) {
 			callback(response);
 		});
 	});
 }
 
 function getOtherProjects(email, callback) {
-	User.findOne({
-		'login.email': email
-	}, function(error, response) {
-		if (error) {
-			console.log(error);
-			throw error;
-		} else {
-			if (response.filter.length > 0) {
-				if (response.sortingPreference.sortBy == 'date') {
-					Project.find({
-						'author.id': {$ne: response._id},
-						'category': {$in: response.categoryPreference},
-						'tags': {$in: response.filter}
-					}, null, {
-						sort: {
-							'date': response.sortingPreference.order
-						}
-					}, function(error, response) {
-						if (error) {
-							console.log(error);
-							throw error;
-						} else {
-							console.log(response);
-							callback(response);
-						}
-					});
-				} else if (response.sortingPreference.sortBy == 'normalized') {
-					Project.find({
-						'author.id': {$ne: response._id},
-						'category': {$in: response.categoryPreference},
-						'tags': {$in: response.filter}
-					}, null, {
-						sort: {
-							'normalized': response.sortingPreference.order
-						}
-					}, function(error, response) {
-						if (error) {
-							console.log(error);
-							throw error;
-						} else {
-							callback(response);
-						}
-					});
-				}
-			} else {
-				if (response.sortingPreference.sortBy == 'date') {
-					Project.find({
-						'author.id': {$ne: response._id},
-						'category': {$in: response.categoryPreference}
-					}, null, {
-						sort: {
-							'date': response.sortingPreference.order
-						}
-					}, function(error, response) {
-						if (error) {
-							console.log(error);
-							throw error;
-						} else {
-							callback(response);
-						}
-					});
-				} else if (response.sortingPreference.sortBy == 'normalized') {
-					Project.find({
-						'author.id': {$ne: response._id},
-						'category': {$in: response.categoryPreference}
-					}, null, {
-						sort: {
-							'normalized': response.sortingPreference.order
-						}
-					}, function(error, response) {
-						if (error) {
-							console.log(error);
-							throw error;
-						} else {
-							callback(response);
-						}
-					});
-				}
-			}
-		}
+	findUser(email, function(response) {
+		Project.findOtherProjects(response._id, function(response) {
+			callback(response);
+		});
 	});
 }
 
@@ -255,6 +184,48 @@ function pullUserRating(email, flag, id, callback) {
 	}
 }
 
+function setupProfile(email, user_interests, user_locations, callback) {
+	var interests = []
+	if (user_interests.art) {interests.push('Art')}
+	if (user_interests.design) {interests.push('Design')}
+	if (user_interests.fashion) {interests.push('Fashion')}
+	if (user_interests.film) {interests.push('Film')}
+	if (user_interests.food) {interests.push('Food')}
+	if (user_interests.games) {interests.push('Games')}
+	if (user_interests.music) {interests.push('Music')}
+	if (user_interests.photography) {interests.push('Photography')}
+	if (user_interests.technology) {interests.push('Technology')}
+
+	var location = []
+	if (user_locations.paloalto) {location.push('Palo Alto')}
+	if (user_locations.sanjose) {location.push('San Jose')}
+	if (user_locations.toronto) {location.push('Toronto')}
+	if (user_locations.vancouver) {location.push('Vancouver')}
+
+	console.log(interests);
+	console.log(location);
+	User.findOneAndUpdate({
+		'login.email': email
+	},
+	{
+		$set: {
+			'preferences.interests': interests,
+			'preferences.location': location
+		}
+	},
+	{
+		new: true
+	}, function(error, response) {
+		if (error) {
+				console.log(error);
+				throw error;
+			} else {
+				callback(response);
+			}
+	});
+}
+
+
 exports.findUser = findUser;
 exports.createUser = createUser;
 exports.getUserProjects = getUserProjects;
@@ -263,3 +234,4 @@ exports.getRatings = getRatings;
 exports.findRating = findRating;
 exports.pushUserRating = pushUserRating;
 exports.pullUserRating = pullUserRating;
+exports.setupProfile = setupProfile;

@@ -21,6 +21,7 @@ exports.getRatings = User.getRatings;
 exports.findRating = User.findRating;
 exports.pushUserRating = User.pushUserRating;
 exports.pullUserRating = User.pullUserRating;
+exports.setupProfile = User.setupProfile;
 
 exports.findProject = Project.findProject;
 exports.findProjects = Project.findProjects;

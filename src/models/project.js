@@ -31,6 +31,10 @@ var projectSchema = new mongoose.Schema({
 		type: Array,
 		default: []
 	},
+	comments: {
+		type: String,
+		required: false
+	},
 	date: {
 		dateObj: {
 			type: Date,

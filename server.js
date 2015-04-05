@@ -11,7 +11,7 @@ var server = require('./src/controllers/server-controller')
 var app = express();
 
 //Connect to Mongo database
-mongoose.connect('mongodb://localhost/communityfund');
+mongoose.connect('mongodb://localhost/test');
 
 //Setup routes
 app.use(cookieParser());
@@ -31,6 +31,7 @@ app.get('/', function(req, res) {
 	});
 });
 
+//Requests by root
 app.get('/root.html', function(req, res) {
 	res.sendFile('src/html/root.html', {root: __dirname});
 });
@@ -77,20 +78,33 @@ app.post('/logout', function(req, res) {
 	res.redirect('/root.html');
 });
 
+//Requests by main
+app.get('/getUser', function(req, res) {
+	server.findUser(req.cookies.email, function(response) {
+		res.json(response);
+	});
+});
+
+app.get('/getUserProjects', function(req, res) {
+	server.getUserProjects(req.cookies.email, function(response) {
+		res.json(response);
+	});
+});
+
+app.get('/getOtherProjects', function(req, res) {
+	server.getOtherProjects(req.cookies.email, function(response) {
+		res.json(response);
+	});
+});
+
+app.post('/setupProfile', function(req, res) {
+	server.setupProfile(req.cookies.email, req.body.interests, req.body.location, function(response) {
+		res.json(response);
+	});
+});
+/*
 app.post('/createIdea', function(req, res) {
 	server.createIdea(req.body.title, req.body.description, req.body.category, req.body.tags, req.cookies.email, function(response) {
-		res.json(response);
-	});
-});
-
-app.get('/getUserIdeas', function(req, res) {
-	server.getUserIdeas(req.cookies.email, function(response) {
-		res.json(response);
-	});
-});
-
-app.get('/getOtherIdeas', function(req, res) {
-	server.getOtherIdeas(req.cookies.email, function(response) {
 		res.json(response);
 	});
 });
@@ -182,6 +196,7 @@ app.post('/retrieve', function(req, res) {
 		res.json(response);
 	});
 });
+*/
 
 //Listen on port 8080
 console.log("App is running on localhost:8080");

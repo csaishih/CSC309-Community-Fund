@@ -29,6 +29,19 @@ function findProjects(author_id, callback) {
 	});
 }
 
+function findOtherProjects(id, callback) {
+	Project.find({
+		'author.id': {$ne: id}
+	}, function(error, response) {
+		if (error) {
+			console.log(error);
+			throw error;
+		} else {
+			callback(response);
+		}
+	});
+}
+
 function deleteProject(id, callback) {
 	Project.remove({
 		'_id': id
@@ -41,8 +54,6 @@ function deleteProject(id, callback) {
 		}
 	});
 }
-
-
 
 function createProject(title, description, category, tags, email, callback) {
 	User.findUser(email, function(response) {
@@ -161,6 +172,7 @@ function categoryCount(callback) {
 
 exports.findProject = findProject;
 exports.findProjects = findProjects;
+exports.findOtherProjects = findOtherProjects;
 exports.deleteProject = deleteProject;
 exports.createProject = createProject;
 exports.updateIdea = updateIdea;

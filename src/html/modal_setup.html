@@ -1,0 +1,61 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Profile set up</h4>
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal" role="form">
+			<div class="alert alert-info form">
+				<label class="control-label">Select your areas of interest</label>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Art" ng-model="checkbox_interests.art">Art</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Design" ng-model="checkbox_interests.design">Design</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Fasion" ng-model="checkbox_interests.fasion">Fashion</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Film" ng-model="checkbox_interests.film">Film</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Food" ng-model="checkbox_interests.food">Food</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Games" ng-model="checkbox_interests.games">Games</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Music" ng-model="checkbox_interests.music">Music</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Photography" ng-model="checkbox_interests.photography">Photography</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Technology" ng-model="checkbox_interests.technology">Technology</label>
+				</div>
+			</div>
+		</form>
+		<form class="form-horizontal" role="form">
+			<div class="alert alert-info form">
+				<label class="control-label">Select your location</label>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Palo Alto" ng-model="checkbox_location.paloalto">Palo Alto</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="San Jose" ng-model="checkbox_location.sanjose">San Jose</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Toronto" ng-model="checkbox_location.toronto">Toronto</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" value="Vancouver" ng-model="checkbox_location.vancouver">Vancouver</label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" ng-click="submit()" class="btn btn-primary" data-dismiss="modal">OK</button>
+		<button type="button" ng-click="cancel()" class="btn">Cancel</button>
+	</div>
+</div>
