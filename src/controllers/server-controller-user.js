@@ -185,25 +185,8 @@ function pullUserRating(email, flag, id, callback) {
 }
 
 function setupProfile(email, user_interests, user_locations, callback) {
-	var interests = []
-	if (user_interests.art) {interests.push('Art')}
-	if (user_interests.design) {interests.push('Design')}
-	if (user_interests.fashion) {interests.push('Fashion')}
-	if (user_interests.film) {interests.push('Film')}
-	if (user_interests.food) {interests.push('Food')}
-	if (user_interests.games) {interests.push('Games')}
-	if (user_interests.music) {interests.push('Music')}
-	if (user_interests.photography) {interests.push('Photography')}
-	if (user_interests.technology) {interests.push('Technology')}
-
-	var location = []
-	if (user_locations.paloalto) {location.push('Palo Alto')}
-	if (user_locations.sanjose) {location.push('San Jose')}
-	if (user_locations.toronto) {location.push('Toronto')}
-	if (user_locations.vancouver) {location.push('Vancouver')}
-
-	console.log(interests);
-	console.log(location);
+	var interests = Project.parseInterests(user_interests);
+	var location = Project.parseLocations(user_locations);
 	User.findOneAndUpdate({
 		'login.email': email
 	},

@@ -55,7 +55,34 @@ function deleteProject(id, callback) {
 	});
 }
 
-function createProject(title, description, category, tags, email, callback) {
+function parseInterests(user_interests) {
+	var interests = []
+	if (user_interests.art) {interests.push('Art')}
+	if (user_interests.design) {interests.push('Design')}
+	if (user_interests.fashion) {interests.push('Fashion')}
+	if (user_interests.film) {interests.push('Film')}
+	if (user_interests.food) {interests.push('Food')}
+	if (user_interests.games) {interests.push('Games')}
+	if (user_interests.music) {interests.push('Music')}
+	if (user_interests.photography) {interests.push('Photography')}
+	if (user_interests.technology) {interests.push('Technology')}
+	return interests;
+}
+
+function parseLocations(user_locations) {
+	var location = []
+	if (user_locations.paloalto) {location.push('Palo Alto')}
+	if (user_locations.sanjose) {location.push('San Jose')}
+	if (user_locations.toronto) {location.push('Toronto')}
+	if (user_locations.vancouver) {location.push('Vancouver')}
+	return location;
+}
+
+function createProject(email, title, description, fundgoal, user_interests, user_locations, callback) {
+	var interests = parseInterests(user_interests);
+	var location = parseLocations(user_locations);
+	fundgoal = parseInt(fundgoal);
+
 	User.findUser(email, function(response) {
 		new Project({
 			author: {
@@ -64,10 +91,15 @@ function createProject(title, description, category, tags, email, callback) {
 				'email': response.login.email
 			},
 			title: title,
-			normalized: title.toLowerCase(),
 			description: description,
-			tags: tags,
-			category: category
+			funds: {
+				'goal': fundgoal
+			},
+			date: {
+				'parsedDate': Server.parseDate()
+			},
+			category: interests,
+			location: location
 		}).save(function(error, response) {
 			if (error) {
 				console.log(error);
@@ -107,73 +139,11 @@ function updateIdea(id, title, description, category, tags, likes, dislikes, cal
 	});
 }
 
-
-function categoryCount(callback) {
-	var category_count = {
-		health: 0,
-		technology: 0,
-		education: 0,
-		finance: 0,
-		travel: 0
-	}
-	Project.find({
-		'category': "Health"
-	}, function(error, response) {
-		if (error) {
-			console.log(error);
-			throw error;
-		} else {
-			category_count.health = response.length;
-			Project.find({
-				'category': "Technology"
-			}, function(error, response) {
-				if (error) {
-					console.log(error);
-					throw error;
-				} else {
-					category_count.technology = response.length;
-					Project.find({
-						'category': "Education"
-					}, function(error, response) {
-						if (error) {
-							console.log(error);
-							throw error;
-						} else {
-							category_count.education = response.length;
-							Project.find({
-								'category': "Finance"
-							}, function(error, response) {
-								if (error) {
-									console.log(error);
-									throw error;
-								} else {
-									category_count.finance = response.length;
-									Project.find({
-										'category': "Travel"
-									}, function(error, response) {
-										if (error) {
-											console.log(error);
-											throw error;
-										} else {
-											category_count.travel = response.length;
-											callback(category_count);
-										}
-									});
-								}
-							});
-						}
-					});
-				}
-			});
-		}
-	});
-}
-
-
 exports.findProject = findProject;
 exports.findProjects = findProjects;
 exports.findOtherProjects = findOtherProjects;
 exports.deleteProject = deleteProject;
 exports.createProject = createProject;
 exports.updateIdea = updateIdea;
-exports.categoryCount = categoryCount;
+exports.parseInterests = parseInterests;
+exports.parseLocations = parseLocations;

@@ -20,67 +20,68 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 	//Refresh as we load the page for the first time to get our data
 	refresh();
 
-	//Allows users to setup their profile to join a community
-	$scope.profileSetup = function() {
-		var modalInstance = $modal.open({
-			templateUrl: '/src/html/modal_setup.html',
-			controller: 'SetupModalController'
-		});
-
-		modalInstance.result.then(function(response) {
-			$http.post('/setupProfile', response).success(function(response) {
-				if (response) {
-					toastr.success('Profile set up', 'Hooray');
-				} else {
-					toastr.error('something went wrong');
-				}
-				$window.location.href = '/';
-			});
-		});		
-	}
-
+	//Allows users to log out
 	$scope.logout = function() {
 		$http.post('/logout').success(function(response) {
 			$window.location.href = '/';
 		});
 	}
 
+	//Allows users to view a project in detail
 	$scope.view = function(id) {
 		$window.location.href = '/view/' + id;
+	}
+
+	//Allows users to setup their profile to join a community
+	$scope.profileSetup = function() {
+		var modalInstance = $modal.open({
+			templateUrl: '/src/html/modal_setup.html',
+			controller: 'SetupModalController',
+			size: 'lg'
+		});
+		modalInstance.result.then(function(response) {
+			$http.post('/setupProfile', response).success(function(response) {
+				if (response) {
+					toastr.success('Profile set up', 'Hooray');
+				} else {
+					toastr.error('Something went wrong');
+				}
+				refresh();
+			});
+		});
 	}
 
 	$scope.create = function() {
 		var modalInstance = $modal.open({
 			templateUrl: '/src/html/modal_project.html',
 			controller: 'MainModalController',
+			size: 'lg',
 			resolve: {
 				input: function() {
 					return {
 						title: '',
 						description: '',
-						category: '',
-						tags: [],
+						fundgoal: '',
 						pagetext: 'Creating'
 					};
 				}
 			}
 		});
-
-		modalInstance.result.then(function(result) {
-			var str = "{ title: '" + result.title + "', description: '" + result.description + "', category: '" + result.category + "', tags: ['";
-			var i;
-			for (i = 0; i < result.tags.length; i++ ){
-				str += result.tags[i] + "', '";
-			}
-			str = str.substring(0, str.length - 4) + "'] }";
-			var data = JSON.stringify(eval("(" + str + ")"));
-			$scope.update(null, data);		
+		modalInstance.result.then(function(response) {
+			$http.post('/createProject', response).success(function(response) {
+				if (response) {
+					toastr.success('Project created', 'Success');
+					refresh();
+				} else {
+					toastr.error('Something went wrong');
+				}
+			});
 		});
 	}
 
 	$scope.edit = function(id, title, description, category, tags, likes, dislikes) {
 		var modalInstance = $modal.open({
-			templateUrl: '/src/html/modal_idea.html',
+			templateUrl: '/src/html/modal_project.html',
 			controller: 'MainModalController',
 			resolve: {
 				input: function() {
@@ -112,7 +113,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 			if (response) {
 				refresh();
 			} else {
-				console.log("Fail");
+				toastr.error('Something went wrong', 'Error');
 			}
 		});
 	}
@@ -321,7 +322,29 @@ app.controller('SetupModalController', function($scope, $modalInstance, toastr) 
 	}
 });
 
-app.controller('MainModalController', function($scope, $modalInstance, toastr) {
+app.controller('MainModalController', function($scope, $modalInstance, toastr, input) {
+	$scope.pagetext = input.pagetext;
+	$scope.title = input.title;
+	$scope.description = input.description;
+	$scope.fundgoal = input.fundgoal;
+	$scope.checkbox_interests = {
+		art: false,
+		design: false,
+		fashion: false,
+		film: false,
+		food: false,
+		games: false,
+		music: false,
+		photography: false,
+		technology: false
+	};
+	$scope.checkbox_location = {
+		paloalto: false,
+		sanjose: false,
+		toronto: false,
+		vancouver: false
+	}
+
 	$scope.checkError = function(object) {
 		return (object === undefined || object === '' || (object[0] == '' && object.length == 1));
 	}
@@ -330,40 +353,38 @@ app.controller('MainModalController', function($scope, $modalInstance, toastr) {
 		$modalInstance.dismiss('cancel');
 	}
 
-
 	$scope.submit = function() {
-		var correctTags = ($scope.tags.replace(/;+/g, ";")).replace(/'/g, "\\'");
-
-		if (correctTags.charAt(correctTags.length - 1) == ';') {
-			correctTags = correctTags.substring(0, correctTags.length - 1)
-		}
-
-		if (correctTags.charAt(0) == ';') {
-			correctTags = correctTags.substring(1, correctTags.length)
-		}
-
-		correctTags = correctTags.split(';');
-
-		var tags = $scope.removeDuplicates(correctTags);
-		tags = tags.substring(0, tags.length - 1).split(';');
-
 		if ($scope.checkError($scope.title)) {
-			toastr.error('Please specify a title', 'Error');
+			toastr.error('Please enter a title for your project', 'Error');
 		} else if ($scope.checkError($scope.description)) {
-			toastr.error('Please enter a desciption for your idea', 'Error');
-		} else if ($scope.checkError($scope.category)) {
-			toastr.error('Please select a category for this idea', 'Error');
-		} else if ($scope.checkError(tags)) {
-			toastr.error('Please enter some keywords/tags for your idea', 'Error');
+			toastr.error('Please enter a desciption for your project', 'Error');
+		} else if ($scope.checkError($scope.fundgoal)) {
+			toastr.error('Please specify a funding goal foro your project', 'Error');
+		} else if ($scope.checkbox_interests.art == false &&
+			$scope.checkbox_interests.design == false &&
+			$scope.checkbox_interests.fashion == false &&
+			$scope.checkbox_interests.film == false &&
+			$scope.checkbox_interests.food == false &&
+			$scope.checkbox_interests.games == false &&
+			$scope.checkbox_interests.music == false &&
+			$scope.checkbox_interests.photography == false &&
+			$scope.checkbox_interests.technology == false) {
+			toastr.error('Please select your interests', 'Error');
+		} else if ($scope.checkbox_location.paloalto == false &&
+			$scope.checkbox_location.sanjose == false &&
+			$scope.checkbox_location.toronto == false &&
+			$scope.checkbox_location.vancouver == false) {
+			toastr.error('Please select your locations', 'Error');
 		} else {
 			$modalInstance.close({
 				title: $scope.title,
-				description: $scope.description,
-				category: $scope.category,
-				tags: tags
+				desciption: $scope.desciption,
+				fundgoal: $scope.fundgoal,
+				interests: $scope.checkbox_interests,
+				location: $scope.checkbox_location
 			});
 		}
-	};
+	}
 });
 
 app.config(function(toastrConfig) {

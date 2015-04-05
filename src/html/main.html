@@ -25,43 +25,50 @@
 			</div>
 		</nav>
 		<div class="container">
-			<div ng-if="(location).length == 0 || (interests).length == 0" class="text-center">
+			<div ng-if="location.length == 0 || interests.length == 0" class="text-center">
 				<h2>Welcome to Community Fund</h2>
 				<h1>{{username}}</h1>
 				<br><br>
 				<div class="main-container btn btn-success" ng-click="profileSetup()">Get started</div>
 			</div>
-			<div ng-if="(userIdeas).length > 0" class="greeting tab">Hello, {{username}}</div>
-			<div ng-if="(userIdeas).length > 0" class="panel panel-default">
-				<div class="panel-heading">
-					<div class="btn disabled"><b>Your ideas</b></div>
+			<div ng-if="location.length > 0">
+				<div ng-if="interests.length > 0">
+					<div ng-if="userProjects.length == 0" class="text-center">
+						<h2>Share your ideas!</h2>
+						<div class="main-container btn btn-success" ng-click="create()">Start a project</div>
+					</div>
+					<div ng-if="userProjects.length >= 0" class="text-center">
+						<div class="panel-heading">
+							<div class="btn disabled"><b>Your ideas</b></div>
+						</div>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Title</th>
+									<th>Description</th>
+									<th>Tags</th>
+									<th>Likes</th>
+									<th>Dislikes</th>
+									<th>Date created</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="idea in userIdeas track by $index">
+									<td class="col-md-1">{{idea.title}}</td>
+									<td class="col-md-2">{{idea.description}}</td>
+									<td class="col-md-1">{{idea.category}}</td>
+									<td class="col-md-2"><div class="tag category blue pull-left" ng-repeat="tag in idea.tags track by $index">{{tag}}</div></td>
+									<td class="col-md-1">{{idea.rating.likes}}</td>
+									<td class="col-md-1">{{idea.rating.dislikes}}</td>
+									<td class="col-md-1">{{idea.parsedDate}}</td>
+									<td class="pull-right"><button class="btn btn-primary" ng-click="view(idea._id)">View</button></td>
+									<td class="pull-right"><button class="btn btn-danger" ng-click="remove(idea._id, idea.title, idea.description, idea.category, idea.tags)">Remove</button></td>
+									<td class="pull-right"><button class="btn btn-warning" ng-click="edit(idea._id, idea.title, idea.description, idea.category, idea.tags, idea.rating.likes, idea.rating.dislikes)">Edit</button></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
-				<table class="table">
-					<thead>
-						<tr>
-							<th>Title</th>
-							<th>Description</th>
-							<th>Tags</th>
-							<th>Likes</th>
-							<th>Dislikes</th>
-							<th>Date created</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr ng-repeat="idea in userIdeas track by $index">
-							<td class="col-md-1">{{idea.title}}</td>
-							<td class="col-md-2">{{idea.description}}</td>
-							<td class="col-md-1">{{idea.category}}</td>
-							<td class="col-md-2"><div class="tag category blue pull-left" ng-repeat="tag in idea.tags track by $index">{{tag}}</div></td>
-							<td class="col-md-1">{{idea.rating.likes}}</td>
-							<td class="col-md-1">{{idea.rating.dislikes}}</td>
-							<td class="col-md-1">{{idea.parsedDate}}</td>
-							<td class="pull-right"><button class="btn btn-primary" ng-click="view(idea._id)">View</button></td>
-							<td class="pull-right"><button class="btn btn-danger" ng-click="remove(idea._id, idea.title, idea.description, idea.category, idea.tags)">Remove</button></td>
-							<td class="pull-right"><button class="btn btn-warning" ng-click="edit(idea._id, idea.title, idea.description, idea.category, idea.tags, idea.rating.likes, idea.rating.dislikes)">Edit</button></td>
-						</tr>
-					</tbody>
-				</table>
 			</div>
 		</div>
 

@@ -16,7 +16,8 @@ var projectSchema = new mongoose.Schema({
 	funds: {
 		raised: {
 			type: Number,
-			required: true
+			required: true,
+			default: 0
 		},
 		goal: {
 			type: Number,
@@ -32,8 +33,9 @@ var projectSchema = new mongoose.Schema({
 		default: []
 	},
 	comments: {
-		type: String,
-		required: false
+		type: Array,
+		required: false,
+		default: []
 	},
 	date: {
 		dateObj: {

@@ -78,7 +78,7 @@ app.post('/logout', function(req, res) {
 	res.redirect('/root.html');
 });
 
-//Requests by main
+//User and profile requests
 app.get('/getUser', function(req, res) {
 	server.findUser(req.cookies.email, function(response) {
 		res.json(response);
@@ -99,6 +99,13 @@ app.get('/getOtherProjects', function(req, res) {
 
 app.post('/setupProfile', function(req, res) {
 	server.setupProfile(req.cookies.email, req.body.interests, req.body.location, function(response) {
+		res.json(response);
+	});
+});
+
+//Project requests
+app.post('/createProject', function(req, res) {
+	server.createProject(req.cookies.email, req.body.title, req.body.description, req.body.fundgoal, req.body.interests, req.body.location, function(response) {
 		res.json(response);
 	});
 });
