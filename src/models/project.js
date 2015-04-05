@@ -24,6 +24,10 @@ var projectSchema = new mongoose.Schema({
 			required: true
 		}
 	},
+	numFunders: {
+		type: Number,
+		default: 0
+	},
 	category: {
 		type: Array,
 		default: []

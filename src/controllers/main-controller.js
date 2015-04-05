@@ -20,19 +20,19 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 	//Refresh as we load the page for the first time to get our data
 	refresh();
 
-	//Allows users to log out
+	//Log out function
 	$scope.logout = function() {
 		$http.post('/logout').success(function(response) {
 			$window.location.href = '/';
 		});
 	}
 
-	//Allows users to view a project in detail
+	//View a project in detail
 	$scope.view = function(id) {
 		$window.location.href = '/view/' + id;
 	}
 
-	//Allows users to setup their profile to join a community
+	//Setup user profile to join a community
 	$scope.profileSetup = function() {
 		var modalInstance = $modal.open({
 			templateUrl: '/src/html/modal_setup.html',
@@ -51,6 +51,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 		});
 	}
 
+	//Create a project
 	$scope.create = function() {
 		var modalInstance = $modal.open({
 			templateUrl: '/src/html/modal_project.html',
@@ -359,7 +360,9 @@ app.controller('MainModalController', function($scope, $modalInstance, toastr, i
 		} else if ($scope.checkError($scope.description)) {
 			toastr.error('Please enter a desciption for your project', 'Error');
 		} else if ($scope.checkError($scope.fundgoal)) {
-			toastr.error('Please specify a funding goal foro your project', 'Error');
+			toastr.error('Please specify a funding goal for your project', 'Error');
+		} else if (!/^[0-9]*$/.test($scope.fundgoal)) {
+			toastr.error('Please enter a valid number for fund goal', 'Error');
 		} else if ($scope.checkbox_interests.art == false &&
 			$scope.checkbox_interests.design == false &&
 			$scope.checkbox_interests.fashion == false &&

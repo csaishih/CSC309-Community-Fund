@@ -116,6 +116,16 @@ app.delete('/project/:id', function(req, res) {
 	});
 });
 
+app.get('/view/:id', function(req, res) {
+	res.sendFile('src/html/view.html', {root: __dirname});
+});
+
+app.get('/findProject/:id', function(req, res) {
+	server.findProject(req.params.id, function(response) {
+		res.json(response);
+	});
+});
+
 /*
 app.post('/createIdea', function(req, res) {
 	server.createIdea(req.body.title, req.body.description, req.body.category, req.body.tags, req.cookies.email, function(response) {
@@ -172,15 +182,8 @@ app.get('/categoryCount', function(req, res) {
 	});
 });
 
-app.get('/view/:id', function(req, res) {
-	res.sendFile('src/html/view.html', {root: __dirname});
-});
 
-app.get('/getIdea/:id', function(req, res) {
-	server.getIdea(req.params.id, function(response) {
-		res.json(response);
-	});
-});
+
 
 app.put('/updateCategory', function(req, res) {
 	server.updateCategory(req.cookies.email, req.body.category, req.body.flag, function(response) {

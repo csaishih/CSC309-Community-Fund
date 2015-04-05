@@ -33,7 +33,6 @@
 			</div>
 			<div ng-if="location.length > 0">
 				<div ng-if="interests.length > 0">
-					<h1 class="text-center">You are involved in communties in {{location}} that take interest in {{interests}}</h1><br><br>
 					<div ng-if="userProjects.length == 0" class="text-center">
 						<h2>Share your ideas!</h2>
 						<div class="main-container btn btn-success" ng-click="create()">Start a project</div>
@@ -53,6 +52,7 @@
 							<th>Title</th>
 							<th>Current Funding</th>
 							<th>Fund Goal</th>
+							<th>Number of funders</th>
 							<th>Likes</th>
 							<th>Dislikes</th>
 							<th>Date created</th>
@@ -61,8 +61,9 @@
 					<tbody>
 						<tr ng-repeat="project in userProjects track by $index">
 							<td class="col-md-2">{{project.title}}</td>
-							<td class="col-md-2">${{project.funds.raised}}</td>
-							<td class="col-md-2">${{project.funds.goal}}</td>
+							<td class="col-md-1">${{project.funds.raised}}</td>
+							<td class="col-md-1">${{project.funds.goal}}</td>
+							<td class="col-md-2">{{project.numFunders}}</td>
 							<td class="col-md-1">{{project.rating.likes}}</td>
 							<td class="col-md-1">{{project.rating.dislikes}}</td>
 							<td class="col-md-2">{{project.date.parsedDate}}</td>
