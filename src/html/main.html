@@ -55,7 +55,6 @@
 							<th>Title</th>
 							<th>Current Funding</th>
 							<th>Fund Goal</th>
-							<th># Funders</th>
 							<th>Category</th>
 							<th>Likes</th>
 							<th>Dislikes</th>
@@ -64,10 +63,9 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat="project in userProjects track by $index">
-							<td class="col-md-1">{{project.title}}</td>
+							<td class="col-md-2">{{project.title}}</td>
 							<td class="col-md-1">${{project.funds.raised}}</td>
 							<td class="col-md-1">${{project.funds.goal}}</td>
-							<td class="col-md-1">{{project.numFunders}}</td>
 							<td class="col-md-2"><div class="tag category blue pull-left" ng-repeat="tag in project.category track by $index">{{tag}}</div></td>
 							<td class="col-md-1">{{project.rating.likes}}</td>
 							<td class="col-md-1">{{project.rating.dislikes}}</td>

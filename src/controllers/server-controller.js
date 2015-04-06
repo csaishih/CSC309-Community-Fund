@@ -3,6 +3,7 @@ var User = require('./server-controller-user');
 var Project = require('./server-controller-project');
 var Auth = require('./server-controller-authentication');
 
+//Parse the date into more readable format
 function parseDate () {
 	var date = new Date();
 	var months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
@@ -13,6 +14,7 @@ function parseDate () {
 	return parsedDate
 }
 
+//Import all functions from the other files
 exports.findUser = User.findUser;
 exports.findUserWithID = User.findUserWithID;
 exports.createUser = User.createUser;

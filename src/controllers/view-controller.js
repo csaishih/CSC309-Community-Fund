@@ -1,5 +1,7 @@
 var app = angular.module('view', ['ui.bootstrap', 'ngAnimate', 'toastr']);
 app.controller('ViewController', function($scope, $modal, $http, $window) {
+
+	//Load up all necessary info
 	var refresh = function() {
 		var location = $window.location.href;
 		$http.get('/getUser').success(function(response) {
