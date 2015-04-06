@@ -340,14 +340,20 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 			}
 		});
 		modalInstance.result.then(function(response) {
+			var r = response
 			$http.put('/fundProject/' + id, response).success(function(response) {
 				if (response) {
 					toastr.success('Thank you for your funding', 'Success');
-					refresh();
+					$http.put('/comment/' + id, {
+						comment: r.comment
+					}).success(function(response) {
+						refresh();
+					});	
 				} else {
 					toastr.error('Something went wrong');
 				}
 			});
+		
 		});
 	}
 });
@@ -370,7 +376,8 @@ app.controller('FundModalController', function($scope, $modalInstance, toastr, i
 			toastr.error('Please enter a valid number for fund', 'Error');
 		} else {
 			$modalInstance.close({
-				fund: $scope.fund
+				fund: $scope.fund,
+				comment: $scope.comment
 			});
 		}
 	}
@@ -484,6 +491,7 @@ app.controller('MainModalController', function($scope, $modalInstance, toastr, i
 			toastr.error('Please select your locations', 'Error');
 		} else {
 			$modalInstance.close({
+				id: input.id,
 				title: $scope.title,
 				description: $scope.description,
 				fundgoal: $scope.fundgoal,
