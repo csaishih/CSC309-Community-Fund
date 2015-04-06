@@ -5,6 +5,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 	//Refresh function to reload everything on the page
 	var refresh = function() {
 		$http.get('/getUser').success(function(response) {
+			$scope.userID = response._id;
 			$scope.username = response.name;
 			$scope.location = response.preferences.location;
 			$scope.interests = response.preferences.interests;
@@ -17,10 +18,21 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 		$http.get('/getOtherProjects').success(function(response) {
 			$scope.otherProjects = response;
 		});
+		$http.get('/getCommunity'). success(function(response) {
+			$scope.community = response;
+		});
 	};
 
 	//Refresh as we load the page for the first time to get our data
 	refresh();
+
+	//View a user's profile
+	$scope.viewProfile = function(id) {
+		if (id == 0) {
+			id = $scope.userID
+		}
+		$window.location.href = '/viewProfile/' + id;
+	}
 
 	//Log out function
 	$scope.logout = function() {
@@ -84,6 +96,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 		});
 	}
 
+	//Edit a project
 	$scope.edit = function(id, title, description, fundgoal) {
 		var modalInstance = $modal.open({
 			templateUrl: '/src/html/modal_project.html',
@@ -101,7 +114,6 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 				}
 			}
 		});
-
 		modalInstance.result.then(function(response) {
 			$http.post('/editProject', response).success(function(response) {
 				if (response) {
@@ -114,6 +126,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 		});
 	}
 
+	//Remove a project
 	$scope.remove = function(id) {
 		$http.delete('/project/' + id).success(function(response) {
 			if (response) {
@@ -124,112 +137,242 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 		});
 	}
 
-	$scope.like = function(id, title, description, category, tags) {
+	//flag = 0 -> like project
+	//flag = 1 -> like user
+	$scope.like = function(id, flag) {
 		$http.get('/findRating/' + id).success(function(response) {
 			if (response == 1) {
 				$http.put('/user/1', {
 					id: id,
 					flag: -1
 				}).success(function(response) {
-					$http.put('/project/' + id, {
-						likes: -1,
-						dislikes: 0
-					}).success(function(response) {
-						if (response) {
-							refresh();
-						} else {
-							console.log("error");
-						}
-					});
+					if (flag == 0) {
+						$http.put('/project/' + id, {
+							likes: -1,
+							dislikes: 0
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					} else if (flag == 1) {
+						$http.put('/rateUser/' + id, {
+							likes: -1,
+							dislikes: 0
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					}
 				});
 			} else if (response == 0) {
 				$http.put('/user/1', {
 					id: id,
 					flag: 1
 				}).success(function(response) {
-					$http.put('/project/' + id, {
-						likes: 1,
-						dislikes: 0
-					}).success(function(response) {
-						if (response) {
-							refresh();
-						} else {
-							console.log("error");
-						}
-					});
+					if (flag == 0) {
+						$http.put('/project/' + id, {
+							likes: 1,
+							dislikes: 0
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					} else if (flag == 1) {
+						$http.put('/rateUser/' + id, {
+							likes: 1,
+							dislikes: 0
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					}
 				});
 			} else if (response == -1) {
 				$http.put('/user/1', {
 					id: id,
 					flag: 0
 				}).success(function(response) {
-					$http.put('/project/' + id, {
-						likes: 1,
-						dislikes: -1
-					}).success(function(response) {
-						if (response) {
-							refresh();
-						} else {
-							console.log("error");
-						}
-					});
+					if (flag == 0) {
+						$http.put('/project/' + id, {
+							likes: 1,
+							dislikes: -1
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					} else if (flag == 1) {
+						$http.put('/rateUser/' + id, {
+							likes: 1,
+							dislikes: -1
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					}
 				});
 			}
 		});
 	}
 
-	$scope.dislike = function(id, title, description, category, tags) {
+	$scope.dislike = function(id, flag) {
 		$http.get('/findRating/' + id).success(function(response) {
 			if (response == -1) {
 				$http.put('/user/0', {
 					id: id,
 					flag: -1
 				}).success(function(response) {
-					$http.put('/project/' + id, {
-						likes: 0,
-						dislikes: -1
-					}).success(function(response) {
-						if (response) {
-							refresh();
-						} else {
-							console.log("error");
-						}
-					});
+					if (flag == 0) {
+						$http.put('/project/' + id, {
+							likes: 0,
+							dislikes: -1
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					} else if (flag == 1) {
+						$http.put('/rateUser/' + id, {
+							likes: 0,
+							dislikes: -1
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					}
 				});
 			} else if (response == 0) {
 				$http.put('/user/0', {
 					id: id,
 					flag: 1
 				}).success(function(response) {
-					$http.put('/project/' + id, {
-						likes: 0,
-						dislikes: 1
-					}).success(function(response) {
-						if (response) {
-							refresh();
-						} else {
-							console.log("error");
-						}
-					});
+					if (flag == 0) {
+						$http.put('/project/' + id, {
+							likes: 0,
+							dislikes: 1
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					} else if (flag == 1) {
+						$http.put('/rateUser/' + id, {
+							likes: 0,
+							dislikes: 1
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					}
 				});
 			} else if (response == 1) {
 				$http.put('/user/0', {
 					id: id,
 					flag: 0
 				}).success(function(response) {
-					$http.put('/project/' + id, {
-						likes: -1,
-						dislikes: 1
-					}).success(function(response) {
-						if (response) {
-							refresh();
-						} else {
-							console.log("error");
-						}
-					});
+					if (flag == 0) {
+						$http.put('/project/' + id, {
+							likes: -1,
+							dislikes: 1
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					} else if (flag == 1) {
+						$http.put('/rateUser/' + id, {
+							likes: -1,
+							dislikes: 1
+						}).success(function(response) {
+							if (response) {
+								refresh();
+							} else {
+								console.log("error");
+							}
+						});
+					}
 				});
 			}
 		});
+	}
+
+	$scope.fund = function(id, title) {
+		var modalInstance = $modal.open({
+			templateUrl: '/src/html/modal_fund.html',
+			controller: 'FundModalController',
+			size: 'lg',
+			resolve: {
+				input: function() {
+					return {
+						id: id,
+						title: title
+					};
+				}
+			}
+		});
+		modalInstance.result.then(function(response) {
+			$http.put('/fundProject/' + id, response).success(function(response) {
+				if (response) {
+					toastr.success('Thank you for your funding', 'Success');
+					refresh();
+				} else {
+					toastr.error('Something went wrong');
+				}
+			});
+		});
+	}
+});
+
+app.controller('FundModalController', function($scope, $modalInstance, toastr, input) {
+	$scope.title = input.title;
+
+	$scope.cancel = function() {
+		$modalInstance.dismiss('cancel');
+	}
+
+	$scope.checkError = function(object) {
+		return (object === undefined || object === '' || (object[0] == '' && object.length == 1));
+	}
+
+	$scope.submit = function() {
+		if ($scope.checkError($scope.fund)) {
+			toastr.error('Please specify an amount', 'Error');
+		} else if (!/^[0-9]*$/.test($scope.fund)) {
+			toastr.error('Please enter a valid number for fund', 'Error');
+		} else {
+			$modalInstance.close({
+				fund: $scope.fund
+			});
+		}
 	}
 });
 

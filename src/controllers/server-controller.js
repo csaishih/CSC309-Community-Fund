@@ -22,6 +22,8 @@ exports.findRating = User.findRating;
 exports.pushUserRating = User.pushUserRating;
 exports.pullUserRating = User.pullUserRating;
 exports.setupProfile = User.setupProfile;
+exports.getCommunity = User.getCommunity;
+exports.rateUser = User.rateUser;
 
 exports.findProject = Project.findProject;
 exports.findProjects = Project.findProjects;
@@ -29,6 +31,9 @@ exports.deleteProject = Project.deleteProject;
 exports.createProject = Project.createProject;
 exports.editProject = Project.editProject;
 exports.editProjectRep = Project.editProjectRep;
+exports.fundProject = Project.fundProject;
+exports.addComment = Project.addComment;
+exports.deleteComment = Project.deleteComment;
 
 exports.authenticateEmail = Auth.authenticateEmail;
 exports.authenticateSignUp = Auth.authenticateSignUp;

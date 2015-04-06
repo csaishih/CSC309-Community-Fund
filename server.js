@@ -103,6 +103,16 @@ app.post('/setupProfile', function(req, res) {
 	});
 });
 
+app.put('/rateUser/:id', function(req, res) {
+	server.rateUser(req.params.id, req.body.likes, req.body.dislikes, function(response) {
+		res.json(response);
+	});
+});
+
+app.get('/viewProfile/:id', function(req, res) {
+	res.sendFile('src/html/viewProfile.html', {root: __dirname});
+});
+
 //Project requests
 app.post('/createProject', function(req, res) {
 
@@ -157,11 +167,38 @@ app.put('/user/:flag', function(req, res) {
 	}
 });
 
-app.put('/project/:id', function(req, res) {;
+app.put('/project/:id', function(req, res) {
 	server.editProjectRep(req.params.id, req.body.likes, req.body.dislikes, function(response) {
 		res.json(response);
 	});
 });
+
+app.put('/fundProject/:id', function(req, res) {
+	server.fundProject(req.params.id, req.body.fund, function(response) {
+		res.json(response);
+	});
+});
+
+app.put('/comment/:id', function(req, res) {
+	server.addComment(req.cookies.email, req.params.id, req.body.comment, function(response) {
+		res.json(response);
+	});
+});
+
+app.post('/comment/:id', function(req, res) {
+	server.deleteComment(req.params.id, req.body.comment, function(response) {
+		res.json(response);
+	});
+});
+
+
+//Community requests
+app.get('/getCommunity', function(req, res) {
+	server.getCommunity(req.cookies.email, function(response) {
+		res.json(response);
+	});
+});
+
 /*
 app.post('/createIdea', function(req, res) {
 	server.createIdea(req.body.title, req.body.description, req.body.category, req.body.tags, req.cookies.email, function(response) {

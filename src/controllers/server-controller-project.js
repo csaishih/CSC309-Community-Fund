@@ -168,6 +168,75 @@ function editProjectRep(id, likes, dislikes, callback) {
 		}
 	});
 }
+
+//Increment the likes and dislikes by an integer
+function fundProject(id, fund, callback) {
+	Project.findOneAndUpdate({
+		'_id': id
+	},
+	{
+		$inc: {
+			'funds.raised': fund
+		}
+	},
+	{
+		new: true
+	}, function(error, response) {
+		if (error) {
+			console.log(error);
+			throw error;
+		} else {
+			callback(response);
+		}
+	});
+}
+
+//Add a comment to the project
+function addComment(email, id, comment, callback) {
+	User.findUser(email, function(response) {
+		Project.findOneAndUpdate({
+			'_id': id
+		},
+		{
+			$push: {
+				'comments': [response.name, comment, response.login.email]
+			}
+		},
+		{
+			new: true
+		}, function(error, response) {
+			if (error) {
+				console.log(error);
+				throw error;
+			} else {
+				callback(response);
+			}
+		});
+	});
+	
+}
+
+//Deletes a comment
+function deleteComment(id, comment, callback) {
+	Project.findOneAndUpdate({
+		'_id': id
+	},
+	{
+		$pull: {
+			'comments': comment
+		}
+	},{
+		new: true
+	}, function(error, response) {
+		if (error) {
+			console.log(error);
+			throw error;
+		} else {
+			callback(response);
+		}
+	});
+}
+
 exports.findProject = findProject;
 exports.findProjects = findProjects;
 exports.findOtherProjects = findOtherProjects;
@@ -177,3 +246,6 @@ exports.editProject = editProject;
 exports.parseInterests = parseInterests;
 exports.parseLocations = parseLocations;
 exports.editProjectRep = editProjectRep;
+exports.fundProject = fundProject;
+exports.addComment = addComment;
+exports.deleteComment = deleteComment;

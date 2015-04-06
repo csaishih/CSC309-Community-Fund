@@ -19,11 +19,8 @@
 				</div>
 			</div>
 		</nav>
-		<br><br>
 		<div class="container">
 			<div class="tab">
-				<div class="tag category btn-success disabled" ng-repeat="tag in category track by $index">{{tag}}</div>
-				<div class="tag category btn-danger disabled" ng-repeat="tag in location track by $index">{{tag}}</div>
 				<button class="btn btn-danger pull-right" ng-click="goBack()">Go back</button>
 			</div>
 			<div class="panel panel-info">
@@ -44,24 +41,7 @@
 						</div>
 					</div>
 				</div>
-				<table class="table">
-					<tbody>
-						<tr ng-repeat="c in comments track by $index" class="panel-footer">
-							<td ng-if="currentUser == c[2] || currentUser == authorEmail" class="comment">{{c[0]}}: {{c[1]}}<button type="button" class="close" ng-click="removeComment(c)" data-dismiss="modal" aria-hidden="true">&times;</button></td>
-							<div ng-if="currentUser != authorEmail">
-								<td ng-if="currentUser != c[2]" class="comment">{{c[0]}}: {{c[1]}} {{c[2]}}</td>
-							</div>
-						</tr>
-					</tbody>
-				</table>
-				<div class="panel-footer">
-					<form class="form-inline">
-						<div class="form-group">
-							<input type="text" class="form-control" ng-model="com" placeholder="Share your thoughts">
-							<button class="btn btn-default" ng-click="comment(id)">Post</button>
-						</div>
-					</form>
-				</div>
+				<div class="panel-footer"><div class="tag category btn-success" ng-repeat="tag in tags track by $index">{{tag}}</div></div>
 			</div>
 		</div>
 

@@ -12,7 +12,7 @@ function findUser(email, callback) {
 			console.log(error);
 			throw error;
 		} else {
-			callback(response)
+			callback(response);
 		}
 	});
 }
@@ -216,6 +216,46 @@ function setupProfile(email, user_interests, user_locations, callback) {
 	});
 }
 
+//Get the other people in the user's community
+function getCommunity(email, callback) {
+	findUser(email, function(response) {
+		User.find({
+			'login.email': {$ne: email},
+			'preferences.interests': {$in: response.preferences.interests},
+			'preferences.location': {$in: response.preferences.location}
+		}, function(error, response) {
+			if (error) {
+				console.log(error);
+				throw error;
+			} else {
+				callback(response);
+			}
+		});
+	});
+}
+
+//Sets rating for the user
+function rateUser(id, likes, dislikes, callback) {
+	User.findOneAndUpdate({
+		'_id': id
+	},
+	{
+		$inc: {
+			'rating.likes': likes,
+			'rating.dislikes': dislikes
+		}
+	},
+	{
+		new: true
+	}, function(error, response) {
+		if (error) {
+			console.log(error);
+			throw error;
+		} else {
+			callback(response);
+		}
+	});
+}
 
 exports.findUser = findUser;
 exports.createUser = createUser;
@@ -226,3 +266,5 @@ exports.findRating = findRating;
 exports.pushUserRating = pushUserRating;
 exports.pullUserRating = pullUserRating;
 exports.setupProfile = setupProfile;
+exports.getCommunity = getCommunity;
+exports.rateUser = rateUser;

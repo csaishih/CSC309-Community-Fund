@@ -1,0 +1,26 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Fund: {{title}}</h4>
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label for="fund" class="col-sm-2 control-label">Amount</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="fund" placeholder="Enter amount to fund i.e 300000" value={{fund}} ng-model="fund">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="comment" class="col-sm-2 control-label">Leave a comment</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="comment" placeholder="Optional" value={{comment}} ng-model="comment">
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" ng-click="submit()" class="btn btn-primary" data-dismiss="modal">OK</button>
+		<button type="button" ng-click="cancel()" class="btn">Cancel</button>
+	</div>
+</div>

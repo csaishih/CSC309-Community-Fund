@@ -40,10 +40,6 @@
 	border-radius: 4px;
 }
 
-.tab {
-	margin-bottom: 34px;
-}
-
 .greeting {
 	font-size: 1.7em;
 	margin: 0;
@@ -130,4 +126,16 @@ table>tbody>tr>td, .table>tbody>tr {
 	padding: 0 30px 0 30px;
 	font-size: 3em;
 	margin-bottom: 10%;
+}
+
+a, a:hover {
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.comment {
+	width: 60px;
+	max-width: 60px;
+	min-width: 60px;
+	word-wrap: break-word;
 }
