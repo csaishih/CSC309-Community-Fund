@@ -22,6 +22,9 @@
 				<div class="nav navbar-nav navbar-right">
 					<button class="btn btn-default" ng-click="create()">Start new project</button>
 				</div>
+				<div ng-if="email == 'shihan.ai@mail.utoronto.ca'"class="nav navbar-nav navbar-right">
+					<button class="btn btn-default" ng-click="admin()">Admin stats</button>
+				</div>
 			</div>
 		</nav>
 		<div class="container">
@@ -101,7 +104,7 @@
 							<td class="col-md-1">{{project.title}}</td>
 							<td class="col-md-1">${{project.funds.raised}}</td>
 							<td class="col-md-1">${{project.funds.goal}}</td>
-							<td class="col-md-1"><a ng-click="viewprofile(project.author.id)">{{project.author.name}}</a></td>
+							<td class="col-md-1"><a ng-click="viewProfile(project.author.id)">{{project.author.name}}</a></td>
 							<td class="col-md-2"><div class="tag category blue pull-left" ng-repeat="tag in project.category track by $index">{{tag}}</div></td>
 							<td class="col-md-1">{{project.rating.likes}}</td>
 							<td class="col-md-1">{{project.rating.dislikes}}</td>
@@ -140,7 +143,7 @@
 							<td class="col-md-1">{{user.rating.likes}}</td>
 							<td class="col-md-1">{{user.rating.dislikes}}</td>
 							<td class="col-md-1">{{user.date.parsedDate}}</td>
-							<td class="pull-right"><button class="btn btn-primary" ng-click="viewprofile(user._id)">View</button></td>
+							<td class="pull-right"><button class="btn btn-primary" ng-click="viewProfile(user._id)">View</button></td>
 							<td class="pull-right" ng-if="(ratedDislikes).indexOf(user._id) == -1"><button class="btn btn-default" ng-click="dislike(user._id, 1)">Dislike</button></td>
 							<td class="pull-right" ng-if="(ratedDislikes).indexOf(user._id) > -1"><button class="btn btn-danger" ng-click="dislike(user._id, 1)">Dislike</button></td>
 							<td class="pull-right" ng-if="(ratedLikes).indexOf(user._id) == -1"><button class="btn btn-default" ng-click="like(user._id, 1)">Like</button></td>

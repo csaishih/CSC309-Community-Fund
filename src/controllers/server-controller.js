@@ -14,6 +14,7 @@ function parseDate () {
 }
 
 exports.findUser = User.findUser;
+exports.findUserWithID = User.findUserWithID;
 exports.createUser = User.createUser;
 exports.getUserProjects = User.getUserProjects;
 exports.getOtherProjects = User.getOtherProjects;
@@ -24,6 +25,9 @@ exports.pullUserRating = User.pullUserRating;
 exports.setupProfile = User.setupProfile;
 exports.getCommunity = User.getCommunity;
 exports.rateUser = User.rateUser;
+exports.editUser = User.editUser;
+exports.addCommentUser = User.addCommentUser;
+exports.deleteCommentUser = User.deleteCommentUser;
 
 exports.findProject = Project.findProject;
 exports.findProjects = Project.findProjects;

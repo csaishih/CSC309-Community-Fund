@@ -199,7 +199,7 @@ function addComment(email, id, comment, callback) {
 		},
 		{
 			$push: {
-				'comments': [response.name, comment, response.login.email]
+				'comments': [response.name, comment, response.login.email, String(response._id)]
 			}
 		},
 		{
@@ -232,6 +232,19 @@ function deleteComment(id, comment, callback) {
 			console.log(error);
 			throw error;
 		} else {
+			callback(response);
+		}
+	});
+}
+
+//Administrative functions
+function getAllProjects() {
+	Project.find({}, function(error, response) {
+		if (error) {
+			console.log(error);
+			throw error;
+		} else {
+
 			callback(response);
 		}
 	});

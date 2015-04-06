@@ -17,6 +17,20 @@ function findUser(email, callback) {
 	});
 }
 
+//Finds a user in the system by id
+function findUserWithID(id, callback) {
+	User.findOne({
+		'_id': id
+	}, function(error, response) {
+		if (error) {
+			console.log(error);
+			throw error;
+		} else {
+			callback(response);
+		}
+	});
+}
+
 //Hash the password and create the user
 function createUser(name, email, password, callback) {
 	bcrypt.genSalt(10, function(error, salt) {
@@ -257,7 +271,87 @@ function rateUser(id, likes, dislikes, callback) {
 	});
 }
 
+//Edits the user
+function editUser(id, name, email, password, user_interests, user_locations, callback) {
+	bcrypt.genSalt(10, function(error, salt) {
+		bcrypt.hash(password, salt, function(error, hash) {
+			var interests = Project.parseInterests(user_interests);
+			var location = Project.parseLocations(user_locations);
+			User.findOneAndUpdate({
+				'_id': id
+			},
+			{
+				$set: {
+					'name': name,
+					'login.email': email,
+					'login.password': hash,
+					'preferences.interests': interests,
+					'preferences.location': location
+				}
+			},
+			{
+				new: true
+			}, function(error, response) {
+				if (error) {
+					console.log(error);
+					throw error;
+				} else {
+					callback(response);
+				}
+			});
+		});
+	});
+}
+
+//Add a comment
+function addCommentUser(email, id, comment, callback) {
+	findUser(email, function(response) {
+		User.findOneAndUpdate({
+			'_id': id
+		},
+		{
+			$push: {
+				'comments': [response.name, comment, response.login.email, String(response._id)]
+			}
+		},
+		{
+			new: true
+		}, function(error, response) {
+			if (error) {
+				console.log(error);
+				throw error;
+			} else {
+				callback(response);
+			}
+		});
+	});
+	
+}
+
+//Deletes a comment
+function deleteCommentUser(id, comment, callback) {
+	User.findOneAndUpdate({
+		'_id': id
+	},
+	{
+		$pull: {
+			'comments': comment
+		}
+	},{
+		new: true
+	}, function(error, response) {
+		if (error) {
+			console.log(error);
+			throw error;
+		} else {
+			callback(response);
+		}
+	});
+}
+
+
 exports.findUser = findUser;
+exports.findUserWithID = findUserWithID;
 exports.createUser = createUser;
 exports.getUserProjects = getUserProjects;
 exports.getOtherProjects = getOtherProjects;
@@ -268,3 +362,6 @@ exports.pullUserRating = pullUserRating;
 exports.setupProfile = setupProfile;
 exports.getCommunity = getCommunity;
 exports.rateUser = rateUser;
+exports.editUser = editUser;
+exports.addCommentUser = addCommentUser;
+exports.deleteCommentUser = deleteCommentUser;

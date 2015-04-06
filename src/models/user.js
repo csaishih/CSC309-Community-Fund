@@ -31,6 +31,11 @@ var userSchema = new mongoose.Schema({
 			type: String
 		}	
 	},
+	comments: {
+		type: Array,
+		required: false,
+		default: []
+	},
 	preferences: {
 		interests: {
 			type: Array,

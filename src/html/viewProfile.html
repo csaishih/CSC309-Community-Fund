@@ -8,7 +8,7 @@
 		<link rel="stylesheet" href="/src/packages/style.css"/>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css"/>
 	</head>
-	<body id="controller" ng-app="view" ng-controller="ViewController">
+	<body id="controller" ng-app="view" ng-controller="ViewProfileController">
 		<nav class="navbar navbar-default">
 			<div class="container">
 				<div class="navbar-header">
@@ -19,20 +19,24 @@
 				</div>
 			</div>
 		</nav>
+		<br><br>
 		<div class="container">
 			<div class="tab">
-				<button class="btn btn-danger pull-right" ng-click="goBack()">Go back</button>
+				<div class="tag category btn-success disabled" ng-repeat="tag in category track by $index">{{tag}}</div>
+				<div class="tag category btn-danger disabled" ng-repeat="tag in location track by $index">{{tag}}</div>
+				<button class="tag btn btn-danger pull-right" ng-click="goBack()">Go back</button>
+				<button ng-if="currentUser == email" class="tag btn btn-warning pull-right" ng-click="edit(id, name, email)">Edit your profile</button>
 			</div>
 			<div class="panel panel-info">
 				<div class="panel-heading">
-					<div class="text-right date">Created on {{parsedDate}}</div>
-					<div class="title">{{title}}</div>
-					<div class="text-left author">Created by: {{authorName}}</div>
+					<div class="text-right date">Joined on {{parsedDate}}</div>
+					<div class="title">{{name}}</div>
+					<div class="text-left author">Email: {{email}}</div>
 				</div>
 				<div class="panel-body">
 					<div class="row">
 						<div class="col-md-10">{{description}}</div>
-						<div class="col-md-2">
+						<div class="pbar col-md-2">
 							<div class="progress">
 								<div class="progress-bar progress-bar-success" style="width: {{likes}}%"></div>
 								<div class="progress-bar progress-bar-danger" style="width: {{dislikes}}%"></div>
@@ -41,7 +45,22 @@
 						</div>
 					</div>
 				</div>
-				<div class="panel-footer"><div class="tag category btn-success" ng-repeat="tag in tags track by $index">{{tag}}</div></div>
+				<table class="table">
+					<tbody>
+						<tr ng-repeat="c in comments track by $index" class="panel-footer">
+							<td ng-if="currentUser == c[2] || currentUser == authorEmail" class="comment"><a ng-click="viewProfile(c[3])">{{c[0]}}</a>: {{c[1]}}<button type="button" class="close" ng-click="removeComment(c)" data-dismiss="modal" aria-hidden="true">&times;</button></td>
+							<td ng-if="currentUser != authorEmail && currentUser != c[2]" class="comment"><a ng-click="viewProfile(c[3])">{{c[0]}}</a>: {{c[1]}}</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="panel-footer">
+					<form class="form-inline">
+						<div class="form-group">
+							<input type="text" class="form-control" ng-model="com" placeholder="Share your thoughts">
+							<button class="btn btn-default" ng-click="comment(id)">Post</button>
+						</div>
+					</form>
+				</div>
 			</div>
 		</div>
 
@@ -52,6 +71,6 @@
 		<script src="/src/packages/ui-bootstrap.min.js"></script>
 		<script src="/src/packages/toastr.min.js"></script>
 		<script src="/src/packages/angular-toastr.tpls.min.js"></script>
-		<script src="/src/controllers/view-controller.js"></script>
+		<script src="/src/controllers/view-profile-controller.js"></script>
 	</body>
 </html>

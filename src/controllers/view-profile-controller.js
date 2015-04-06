@@ -1,22 +1,18 @@
 var app = angular.module('view', ['ui.bootstrap', 'ngAnimate', 'toastr']);
-app.controller('ViewController', function($scope, $modal, $http, $window) {
+app.controller('ViewProfileController', function($scope, $modal, $http, $window) {
 	var refresh = function() {
 		var location = $window.location.href;
 		$http.get('/getUser').success(function(response) {
 			$scope.currentUser = response.login.email;
 		});
-		$http.get('/findProject/' + location.substring(location.length - 24, location.length)).success(function(response) {
+		$http.get('/findUser/' + location.substring(location.length - 24, location.length)).success(function(response) {
 			$scope.id = response._id;
-			$scope.title = response.title;
-			$scope.description = response.description;
-			$scope.category = response.category;
-			$scope.location = response.location;
-			$scope.fundgoal = response.funds.goal;
-			$scope.fundsraised = response.funds.raised;
+			$scope.name = response.name;
+			$scope.email = response.login.email;
+			$scope.category = response.preferences.interests;
+			$scope.location = response.preferences.location;
 			$scope.ratingLikes = response.rating.likes;
 			$scope.ratingDislikes = response.rating.dislikes;
-			$scope.authorName = response.author.name;
-			$scope.authorEmail = response.author.email;
 			$scope.date = response.date.dateObj;
 			$scope.parsedDate = response.date.parsedDate;
 			$scope.comments = response.comments;
@@ -25,14 +21,7 @@ app.controller('ViewController', function($scope, $modal, $http, $window) {
 			if (total > 0) {
 				$scope.likes = (100 * $scope.ratingLikes) / total;
 				$scope.dislikes = (100 * $scope.ratingDislikes) / total;
-			}
-			
-			if ($scope.fundsraised > $scope.fundgoal) {
-				$scope.amountFunded = 100;
-			} else {
-				$scope.amountFunded = (100 * $scope.fundsraised) / $scope.fundgoal;
-			}
-
+			}			
 		});
 	};
 	refresh();
@@ -45,29 +34,27 @@ app.controller('ViewController', function($scope, $modal, $http, $window) {
 		}
 		$window.location.href = '/viewProfile/' + id;
 	}
-
-	$scope.edit = function(id, title, description, fundgoal) {
+	
+	$scope.edit = function(id, name, email) {
 		var modalInstance = $modal.open({
-			templateUrl: '/src/html/modal_project.html',
+			templateUrl: '/src/html/modal_profile.html',
 			controller: 'ViewEditModalController',
 			size: 'lg',
 			resolve: {
 				input: function() {
 					return {
 						id: id,
-						title: title,
-						description: description,
-						fundgoal: fundgoal,
+						name: name,
+						email: email,
 						pagetext: 'Editing'
 					};
 				}
 			}
 		});
 		modalInstance.result.then(function(response) {
-			console.log(response);
-			$http.post('/editProject', response).success(function(response) {
+			$http.post('/editUser', response).success(function(response) {
 				if (response) {
-					toastr.success('Project changed', 'Success');
+					toastr.success('Your info has been updated', 'Success');
 					refresh();
 				} else {
 					toastr.error('Something went wrong');
@@ -77,8 +64,7 @@ app.controller('ViewController', function($scope, $modal, $http, $window) {
 	}
 
 	$scope.removeComment = function(comment) {
-		console.log(comment);
-		$http.post('/comment/' + $scope.id, {
+		$http.post('/commentUser/' + $scope.id, {
 			comment: comment
 		}).success(function(response) {
 			refresh();
@@ -86,7 +72,7 @@ app.controller('ViewController', function($scope, $modal, $http, $window) {
 	}
 
 	$scope.comment = function(id) {
-		$http.put('/comment/' + id, {
+		$http.put('/commentUser/' + id, {
 			comment: $scope.com
 		}).success(function(response) {
 			refresh();
@@ -107,9 +93,8 @@ app.controller('ViewController', function($scope, $modal, $http, $window) {
 
 app.controller('ViewEditModalController', function($scope, $modalInstance, toastr, input) {
 	$scope.pagetext = input.pagetext;
-	$scope.title = input.title;
-	$scope.description = input.description;
-	$scope.fundgoal = input.fundgoal;
+	$scope.name = input.name
+	$scope.email = input.email
 	$scope.checkbox_interests = {
 		art: false,
 		design: false,
@@ -136,15 +121,35 @@ app.controller('ViewEditModalController', function($scope, $modalInstance, toast
 		$modalInstance.dismiss('cancel');
 	}
 
+	//Places constraints on the password
+	$scope.validatePassword = function(password, repassword) {
+		if (/^[a-zA-Z0-9- ]*$/.test(password)) {
+			toastr.error('You password must contain at least one special character such as !@#$%^&*', 'Error');
+		} else if (password.length < 8) {
+			toastr.error('You password must be at least 8 characters long', 'Error');
+		} else if (password != repassword) {
+			toastr.error('Passwords do not match!', 'Error');
+		} else {
+			return password == repassword;
+		}
+	}
+
+	//Regex to check for validity of an email address
+	$scope.validateEmail = function(email) {
+		if (/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(email)) {
+			return true;
+		} else {
+			toastr.error('Please enter a valid email address', 'Error');
+		}
+	}
+
 	$scope.submit = function() {
-		if ($scope.checkError($scope.title)) {
-			toastr.error('Please enter a title for your project', 'Error');
-		} else if ($scope.checkError($scope.description)) {
-			toastr.error('Please enter a desciption for your project', 'Error');
-		} else if ($scope.checkError($scope.fundgoal)) {
-			toastr.error('Please specify a funding goal for your project', 'Error');
-		} else if (!/^[0-9]*$/.test($scope.fundgoal)) {
-			toastr.error('Please enter a valid number for fund goal', 'Error');
+		if ($scope.checkError($scope.name)) {
+			toastr.error('Please enter your full name', 'Error');
+		} else if ($scope.checkError($scope.password)) {
+			toastr.error('Please enter your password', 'Error');
+		} else if ($scope.checkError($scope.repassword)) {
+			toastr.error('Please re-enter your password', 'Error');
 		} else if ($scope.checkbox_interests.art == false &&
 			$scope.checkbox_interests.design == false &&
 			$scope.checkbox_interests.fashion == false &&
@@ -160,12 +165,12 @@ app.controller('ViewEditModalController', function($scope, $modalInstance, toast
 			$scope.checkbox_location.toronto == false &&
 			$scope.checkbox_location.vancouver == false) {
 			toastr.error('Please select your locations', 'Error');
-		} else {
+		} else if ($scope.validateEmail($scope.email) && $scope.validatePassword($scope.password, $scope.repassword)) {
 			$modalInstance.close({
 				id: input.id,
-				title: $scope.title,
-				description: $scope.description,
-				fundgoal: $scope.fundgoal,
+				name: $scope.name,
+				email: $scope.email,
+				password: $scope.password,
 				category: $scope.checkbox_interests,
 				location: $scope.checkbox_location
 			});

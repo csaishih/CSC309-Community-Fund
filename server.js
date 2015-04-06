@@ -85,6 +85,23 @@ app.get('/getUser', function(req, res) {
 	});
 });
 
+app.get('/findUser/:id', function(req, res) {
+	server.findUserWithID(req.params.id, function(response) {
+		res.json(response);
+	});
+});
+
+app.post('/editUser', function(req, res) {
+	server.editUser(req.body.id, req.body.name, req.body.email, req.body.password, req.body.category, req.body.location, function(response) {
+		res.cookie("email", req.body.email, {
+			path: '/',
+			httpOnly: true,
+			maxAge: 604800000
+		});
+		res.json(response);
+	});
+});
+
 app.get('/getUserProjects', function(req, res) {
 	server.getUserProjects(req.cookies.email, function(response) {
 		res.json(response);
@@ -191,6 +208,17 @@ app.post('/comment/:id', function(req, res) {
 	});
 });
 
+app.put('/commentUser/:id', function(req, res) {
+	server.addCommentUser(req.cookies.email, req.params.id, req.body.comment, function(response) {
+		res.json(response);
+	});
+});
+
+app.post('/commentUser/:id', function(req, res) {
+	server.deleteCommentUser(req.params.id, req.body.comment, function(response) {
+		res.json(response);
+	});
+});
 
 //Community requests
 app.get('/getCommunity', function(req, res) {
@@ -198,33 +226,6 @@ app.get('/getCommunity', function(req, res) {
 		res.json(response);
 	});
 });
-
-/*
-app.post('/createIdea', function(req, res) {
-	server.createIdea(req.body.title, req.body.description, req.body.category, req.body.tags, req.cookies.email, function(response) {
-		res.json(response);
-	});
-});
-
-
-
-
-app.get('/getUser', function(req, res) {
-	server.getUser(req.cookies.email, function(response) {
-		res.send(response);
-	});
-});
-
-
-
-
-
-app.get('/getRatings', function(req, res) {
-	server.getRatings(req.cookies.email, function(response) {
-		res.json(response);
-	});
-});
-*/
 
 //Listen on port 8080
 console.log("App is running on localhost:8080");

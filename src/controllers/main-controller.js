@@ -6,6 +6,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 	var refresh = function() {
 		$http.get('/getUser').success(function(response) {
 			$scope.userID = response._id;
+			$scope.email = response.login.email;
 			$scope.username = response.name;
 			$scope.location = response.preferences.location;
 			$scope.interests = response.preferences.interests;
@@ -28,6 +29,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 
 	//View a user's profile
 	$scope.viewProfile = function(id) {
+		console.log(id);
 		if (id == 0) {
 			id = $scope.userID
 		}

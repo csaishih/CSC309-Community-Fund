@@ -54,8 +54,8 @@
 				<table class="table">
 					<tbody>
 						<tr ng-repeat="c in comments track by $index" class="panel-footer">
-							<td ng-if="currentUser == c[2] || currentUser == authorEmail" class="comment">{{c[0]}}: {{c[1]}}<button type="button" class="close" ng-click="removeComment(c)" data-dismiss="modal" aria-hidden="true">&times;</button></td>
-							<td ng-if="currentUser != authorEmail && currentUser != c[2]" class="comment">{{c[0]}}: {{c[1]}} {{c[2]}}</td>
+							<td ng-if="currentUser == c[2] || currentUser == authorEmail" class="comment"><a ng-click="viewProfile(c[3])">{{c[0]}}</a>: {{c[1]}}<button type="button" class="close" ng-click="removeComment(c)" data-dismiss="modal" aria-hidden="true">&times;</button></td>
+							<td ng-if="currentUser != authorEmail && currentUser != c[2]" class="comment"><a ng-click="viewProfile(c[3])">{{c[0]}}</a>: {{c[1]}}</td>
 						</tr>
 					</tbody>
 				</table>
