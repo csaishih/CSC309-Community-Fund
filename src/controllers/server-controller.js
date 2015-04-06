@@ -38,6 +38,7 @@ exports.editProjectRep = Project.editProjectRep;
 exports.fundProject = Project.fundProject;
 exports.addComment = Project.addComment;
 exports.deleteComment = Project.deleteComment;
+exports.getAllProjects = Project.getAllProjects;
 
 exports.authenticateEmail = Auth.authenticateEmail;
 exports.authenticateSignUp = Auth.authenticateSignUp;

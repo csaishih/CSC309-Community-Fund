@@ -220,6 +220,12 @@ app.post('/commentUser/:id', function(req, res) {
 	});
 });
 
+app.get('/allProjects', function(req, res) {
+	server.getAllProjects(function(response) {
+		res.json(response);
+	});
+});
+
 //Community requests
 app.get('/getCommunity', function(req, res) {
 	server.getCommunity(req.cookies.email, function(response) {

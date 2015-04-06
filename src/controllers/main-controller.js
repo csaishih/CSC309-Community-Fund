@@ -58,7 +58,7 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 		modalInstance.result.then(function(response) {
 			$http.post('/setupProfile', response).success(function(response) {
 				if (response) {
-					toastr.success('Profile set up', 'Hooray');
+					toastr.success('Profile set up', 'Success');
 				} else {
 					toastr.error('Something went wrong');
 				}
@@ -327,6 +327,33 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 		});
 	}
 
+	//Open admin modal
+	$scope.admin = function() {
+		$http.get('/allProjects').success(function(response) {
+			var totalFund = 0;
+			var i;
+			for (i = 0; i < response.length; i++) {
+				totalFund += response[i].funds.raised;
+			}
+			var modalInstance = $modal.open({
+				templateUrl: '/src/html/modal_admin.html',
+				controller: 'AdminModalController',
+				size: 'lg',
+				resolve: {
+					input: function() {
+						return {
+							numAllProjects: response.length,
+							totalFund: totalFund
+						};
+					}
+				}
+			});
+			modalInstance.result.then(function(response) {
+			});
+		});
+	}
+
+	//Open funding modal
 	$scope.fund = function(id, title) {
 		var modalInstance = $modal.open({
 			templateUrl: '/src/html/modal_fund.html',
@@ -355,9 +382,13 @@ app.controller('MainController', function($scope, $modal, $http, $window, toastr
 					toastr.error('Something went wrong');
 				}
 			});
-		
 		});
 	}
+});
+
+app.controller('AdminModalController', function($scope, $modalInstance, toastr, input) {
+	$scope.numAllProjects = input.numAllProjects;
+	$scope.totalFund = input.totalFund;
 });
 
 app.controller('FundModalController', function($scope, $modalInstance, toastr, input) {

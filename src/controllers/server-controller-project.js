@@ -238,17 +238,17 @@ function deleteComment(id, comment, callback) {
 }
 
 //Administrative functions
-function getAllProjects() {
+function getAllProjects(callback) {
 	Project.find({}, function(error, response) {
 		if (error) {
 			console.log(error);
 			throw error;
 		} else {
-
 			callback(response);
 		}
 	});
 }
+
 
 exports.findProject = findProject;
 exports.findProjects = findProjects;
@@ -262,3 +262,4 @@ exports.editProjectRep = editProjectRep;
 exports.fundProject = fundProject;
 exports.addComment = addComment;
 exports.deleteComment = deleteComment;
+exports.getAllProjects = getAllProjects;
